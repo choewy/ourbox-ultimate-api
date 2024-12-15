@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
-import { ApplicationProfileDTO } from './dto/application-profile.dto';
+import { ApplicationProfileDTO } from './constant/dto/application-profile.dto';
 
 @ApiTags('애플리케이션')
 @Controller()
