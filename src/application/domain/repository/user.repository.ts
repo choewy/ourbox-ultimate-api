@@ -11,4 +11,8 @@ export class UserRepository extends Repository<User> {
   ) {
     super(User, entityManager ?? datatSource.createEntityManager());
   }
+
+  async findOneById(id: string) {
+    return this.findOne({ where: { id } });
+  }
 }

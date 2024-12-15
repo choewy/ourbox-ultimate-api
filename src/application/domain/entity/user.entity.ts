@@ -1,5 +1,7 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
+import { UserStatus } from '../constant/enums';
+
 import { PasswordColumnTransformer } from '@/constant/transformer/password.transformer';
 import { PasswordVO } from '@/constant/vo/password.vo';
 
@@ -16,6 +18,9 @@ export class User {
 
   @Column({ type: 'varchar', length: 50, comment: '이름' })
   name: string;
+
+  @Column({ type: 'varchar', length: 10, default: UserStatus.Activated, comment: '상태' })
+  status: UserStatus;
 
   @CreateDateColumn({ comment: '생성일시' })
   createdAt: Date;

@@ -5,6 +5,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { DataSourceName, NodeEnv } from '../enums';
+import { ApplicationJwtConfig } from '../types';
 
 @Injectable()
 export class ApplicationConfigFactory {
@@ -51,7 +52,43 @@ export class ApplicationConfigFactory {
       database: this.configService.getOrThrow('DB_DATABASE'),
       synchronize: this.configService.get('NODE_ENV') === NodeEnv.Local && this.configService.get('DB_SYNCHRONIZE') === 'true',
       namingStrategy: new SnakeNamingStrategy(),
-      entities: [`${process.cwd()}/dist/application/domain/**/*.entity.{ts,js}`],
+      entities: [`${process.cwd()}/dist/application/domain/entity/**/*.entity.{ts,js}`],
+    };
+  }
+
+  public get jwtConfig(): ApplicationJwtConfig {
+    const suffix = [this.name, this.domain].join(':');
+    return {
+      accessToken: {
+        signOptions: {
+          secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
+          subject: [suffix, 'access-token'].join(':'),
+          issuer: [suffix, 'server'].join(':'),
+          audience: [suffix, 'user'].join(':'),
+          expiresIn: '3s',
+        },
+        verifyOptions: {
+          secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
+          subject: [suffix, 'access-token'].join(':'),
+          issuer: [suffix, 'server'].join(':'),
+          audience: [suffix, 'user'].join(':'),
+        },
+      },
+      refreshToken: {
+        signOptions: {
+          secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
+          subject: [suffix, 'refresh-token'].join(':'),
+          issuer: [suffix, 'server'].join(':'),
+          audience: [suffix, 'user'].join(':'),
+          expiresIn: '1m',
+        },
+        verifyOptions: {
+          secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
+          subject: [suffix, 'refresh-token'].join(':'),
+          issuer: [suffix, 'server'].join(':'),
+          audience: [suffix, 'user'].join(':'),
+        },
+      },
     };
   }
 }

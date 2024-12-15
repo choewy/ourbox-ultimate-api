@@ -28,22 +28,26 @@ export class Swagger {
   }
 
   createCustomOptions(options?: CreateSwaggerCustomOptions) {
-    this.customOptions.swaggerOptions.authAction[RequestHeader.Authorization] = {
-      schema: {
-        type: 'http',
-        in: 'header',
-        schema: 'bearer',
-      },
-      value: options?.accessToken,
-    };
+    if (options?.accessToken) {
+      this.customOptions.swaggerOptions.authAction[RequestHeader.Authorization] = {
+        schema: {
+          type: 'http',
+          in: 'header',
+          schema: 'bearer',
+        },
+        value: options?.accessToken,
+      };
+    }
 
-    this.customOptions.swaggerOptions.authAction[RequestHeader.RefreshToken] = {
-      schema: {
-        type: 'apiKey',
-        in: 'header',
-      },
-      value: options?.refreshToken,
-    };
+    if (options?.refreshToken) {
+      this.customOptions.swaggerOptions.authAction[RequestHeader.RefreshToken] = {
+        schema: {
+          type: 'apiKey',
+          in: 'header',
+        },
+        value: options?.refreshToken,
+      };
+    }
 
     return this;
   }

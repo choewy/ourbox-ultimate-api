@@ -36,7 +36,15 @@ export class RequestContextService {
     return this.clsService.get(RequestContextPropertyKey.ExecutionContext) ?? null;
   }
 
+  getRequestUser<User = any>(): User {
+    return this.clsService.get(RequestContextPropertyKey.RequestUser) ?? null;
+  }
+
   setExecutionContext(executionContext: ExecutionContext) {
     this.clsService.set(RequestContextPropertyKey.ExecutionContext, executionContext);
+  }
+
+  setRequestUser<User = any>(user: User) {
+    this.clsService.set(RequestContextPropertyKey.RequestUser, user);
   }
 }
