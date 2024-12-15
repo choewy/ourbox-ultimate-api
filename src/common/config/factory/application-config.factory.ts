@@ -12,15 +12,23 @@ export class ApplicationConfigFactory {
     return this.configService.getOrThrow('NODE_ENV');
   }
 
-  public get port() {
+  public get name(): string {
+    return this.configService.getOrThrow('npm_package_name');
+  }
+
+  public get version(): string {
+    return this.configService.getOrThrow('npm_package_version');
+  }
+
+  public get port(): number {
     return +this.configService.getOrThrow('PORT');
   }
 
-  public get host() {
+  public get host(): string {
     return this.configService.getOrThrow('HOST');
   }
 
-  public get domain() {
+  public get domain(): string {
     return this.configService.getOrThrow('DOMAIN');
   }
 

@@ -1,4 +1,6 @@
+import { RequestHeader } from '@/constant/enums';
+
 export enum RequestContextPropertyKey {
-  RequestId = 'x-request-id',
+  RequestId = RequestHeader.RequestId,
   ExecutionContext = 'execution-context',
 }
