@@ -4,3 +4,7 @@ export enum NodeEnv {
   Production = 'production',
   Test = 'test',
 }
+
+export enum DataSourceName {
+  Application = 'default',
+}
