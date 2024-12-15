@@ -13,6 +13,7 @@ import {
 
 import { PartnerChannel } from './partner-channel.entity';
 import { ProductComponent } from './product-component.entity';
+import { Purchaser } from './purchaser.entity';
 import { ProductType, ProductUnit } from '../constant/enums';
 
 @Entity({ name: 'product', comment: '상품' })
@@ -44,9 +45,16 @@ export class Product {
   @Column({ type: 'bigint', unsigned: true, nullable: true, comment: '고객사 판매 채널 PK' })
   partnerChannelId: string | null;
 
-  @ManyToOne(() => PartnerChannel, { cascade: true })
+  @ManyToOne(() => PartnerChannel, { onDelete: 'CASCADE' })
   @JoinColumn()
   partnerChannel: PartnerChannel;
+
+  @Column({ type: 'bigint', unsigned: true, nullable: true, comment: '매입처 PK' })
+  purchaserId: string | null;
+
+  @ManyToOne(() => Purchaser, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
+  purchaser: Purchaser | null;
 
   @OneToMany(() => ProductComponent, (e) => e.product, { cascade: true })
   @JoinTable()
