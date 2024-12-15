@@ -38,6 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.5.0",
     "mysql2": "^3.11.5",
+    "nestjs-cls": "^4.5.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
