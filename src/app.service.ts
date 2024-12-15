@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
+import { ApplicationConfigFactory } from './common/config/factory/application-config.factory';
+import { ApplicationProfileDTO } from './dto/application-profile.dto';
+
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  constructor(private readonly applicationConfigFactory: ApplicationConfigFactory) {}
+
+  getApplicationProfile(): ApplicationProfileDTO {
+    return new ApplicationProfileDTO(this.applicationConfigFactory);
   }
 }

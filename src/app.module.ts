@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigFactoryModule } from './common/config/config.module';
-import { DatabaseConfigFactory } from './common/config/factory/database-config.factory';
+import { ApplicationConfigFactory } from './common/config/factory/application-config.factory';
 import { ExceptionFilter } from './common/provider/exception.filter';
 import { SerializeInterceptor } from './common/provider/serialize.interceptor';
 import { ValidationPipe } from './common/provider/validation.pipe';
@@ -15,8 +15,8 @@ import { RequestContextModule } from './common/request-context/request-context.m
     ConfigFactoryModule,
     RequestContextModule,
     TypeOrmModule.forRootAsync({
-      inject: [DatabaseConfigFactory],
-      useFactory(config: DatabaseConfigFactory) {
+      inject: [ApplicationConfigFactory],
+      useFactory(config: ApplicationConfigFactory) {
         return config.typeormModuleOptions;
       },
     }),
