@@ -4,7 +4,7 @@ import { FulfillmentCenter } from './fulfillment-center.entity';
 import { Fulfillment } from './fulfillment.entity';
 import { PartnerChannel } from './partner-channel.entity';
 import { Partner } from './partner.entity';
-import { UserStatus } from '../constant/enums';
+import { UserStatus, UserType } from '../constant/enums';
 
 import { PasswordColumnTransformer } from '@/constant/transformer/password.transformer';
 import { PasswordVO } from '@/constant/vo/password.vo';
@@ -14,6 +14,9 @@ import { PasswordVO } from '@/constant/vo/password.vo';
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '사용자 PK' })
   readonly id: string;
+
+  @Column({ type: 'varchar', length: 10, comment: '구분' })
+  type: UserType;
 
   @Column({ type: 'varchar', length: 340, comment: '이메일' })
   email: string;

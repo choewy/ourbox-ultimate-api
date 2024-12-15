@@ -13,6 +13,14 @@ export class UserRepository extends Repository<User> {
   }
 
   async findOneById(id: string) {
-    return this.findOne({ where: { id } });
+    return this.findOne({
+      relations: {
+        partner: true,
+        partnerChannel: true,
+        fulfillment: true,
+        fulfillmentCenter: true,
+      },
+      where: { id },
+    });
   }
 }
