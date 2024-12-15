@@ -53,6 +53,7 @@ export class ApplicationConfigFactory {
       synchronize: this.configService.get('NODE_ENV') === NodeEnv.Local && this.configService.get('DB_SYNCHRONIZE') === 'true',
       namingStrategy: new SnakeNamingStrategy(),
       entities: [`${process.cwd()}/dist/application/domain/entity/**/*.entity.{ts,js}`],
+      logging: true,
     };
   }
 

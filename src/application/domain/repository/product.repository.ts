@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
-import { User } from '../entity/user.entity';
+import { Product } from '../entity/product.entity';
 
 @Injectable()
-export class UserRepository extends Repository<User> {
+export class ProductRepository extends Repository<Product> {
   constructor(
     readonly datatSource: DataSource,
     readonly entityManager?: EntityManager,
   ) {
-    super(User, entityManager ?? datatSource.createEntityManager());
+    super(Product, entityManager ?? datatSource.createEntityManager());
   }
 
   async findOneById(id: string) {
     return this.findOne({
       relations: {
-        partner: true,
         partnerChannel: { partner: true },
-        fulfillment: true,
-        fulfillmentCenter: { fulfillment: true },
+        purchaser: true,
+        productComponents: { product: true },
       },
       where: { id },
     });
