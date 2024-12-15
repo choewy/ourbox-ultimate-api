@@ -1,0 +1,23 @@
+name: ourbox-ultimate
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ourbox-ultimate-mysql
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_USER: ourbox
+      MYSQL_PASSWORD: ourbox
+      MYSQL_ROOT_PASSWORD: ourbox
+    volumes:
+      - ../ourbox-ultimate-docker/mysql/data:/var/lib/mysql
+      - ../ourbox-ultimate-docker/mysql/log:/var/log
+    ports:
+      - 33061:3306
+    restart: unless-stopped
+    networks:
+      - ourbox-ultimate
+
+networks:
+  ourbox-ultimate:
+    driver: bridge
