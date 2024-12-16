@@ -7,6 +7,7 @@ import { RequiredAuth } from '@/application/decorator/required-auth';
 import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
+import { createOperationDescription } from '@/common/swagger/helper';
 
 @ApiTags('사용자')
 @RequiredAuth()
@@ -16,7 +17,7 @@ export class UserController {
 
   @Post()
   @RequiredUserTypes(UserType.Admin)
-  @ApiOperation({ summary: '사용자 계정 생성' })
+  @ApiOperation({ summary: '사용자 계정 생성', description: createOperationDescription(UserType.Admin) })
   @ApiCreatedResponse()
   async createUser(@Body() createUserDTO: CreateUserDTO) {
     return this.userService.createUser(createUserDTO);
