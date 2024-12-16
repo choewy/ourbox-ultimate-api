@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
-import { UserType } from '@/application/domain/constant/enums';
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { PasswordVO } from '@/constant/vo/password.vo';
@@ -15,7 +14,7 @@ export class UserService {
     }
 
     await this.userRepository.insert({
-      type: UserType.User,
+      type: createUserDTO.type,
       email: createUserDTO.email,
       password: new PasswordVO(createUserDTO.password),
       name: createUserDTO.name,

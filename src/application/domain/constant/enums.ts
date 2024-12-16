@@ -1,6 +1,9 @@
 export enum UserType {
   Admin = 'admin',
-  User = 'user',
+  PartnerAdmin = 'partner-admin',
+  PartnerUser = 'partner-user',
+  FulfillmentAdmin = 'fulfillment-admin',
+  FulfillmentUser = 'fulfillment-user',
 }
 
 export enum UserStatus {
