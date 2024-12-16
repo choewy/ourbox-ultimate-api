@@ -3,8 +3,8 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { PartnerService } from './partner.service';
 
-import { OnlyUserTypes } from '@/application/decorator/only-user-type';
 import { RequiredAuth } from '@/application/decorator/required-auth';
+import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreatePartnerDTO } from '@/application/dto/request/create-partner.dto';
 
@@ -15,7 +15,7 @@ export class PartnerController {
   constructor(private readonly partnerService: PartnerService) {}
 
   @Post()
-  @OnlyUserTypes(UserType.Admin)
+  @RequiredUserTypes(UserType.Admin)
   @ApiOperation({ summary: '고객사 등록' })
   @ApiCreatedResponse()
   async createPartner(@Body() createPartnerDTO: CreatePartnerDTO) {

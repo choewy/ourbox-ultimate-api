@@ -3,7 +3,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToO
 import { Fulfillment } from './fulfillment.entity';
 
 @Entity({ name: 'fulfillment_center', comment: '풀필먼트 센터' })
-@Unique('code', ['code'])
+@Unique('unique', ['fulfillmentId', 'code'])
 export class FulfillmentCenter {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '풀필먼트 센터 PK' })
   readonly id: string;

@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ONLY_USER_TYPES } from '@/application/decorator/only-user-type';
+import { REQUIRED_USER_TYPES } from '@/application/decorator/required-user-types';
+import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 
@@ -13,9 +14,9 @@ export class UserTypeGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const userTypes = this.reflector.getAllAndOverride(ONLY_USER_TYPES, [context.getClass(), context.getHandler()]);
+    const requiredUserTypes = this.reflector.getAllAndOverride(REQUIRED_USER_TYPES, [context.getClass(), context.getHandler()]);
 
-    if (Array.isArray(userTypes) === false) {
+    if (Array.isArray(requiredUserTypes) === false) {
       return true;
     }
 
@@ -25,7 +26,35 @@ export class UserTypeGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    if (!userTypes.includes(requestUser.type)) {
+    if (!requiredUserTypes.includes(requestUser.type)) {
+      throw new ForbiddenException();
+    }
+
+    let isThrowForbiddenException = false;
+
+    switch (requestUser.type) {
+      case UserType.PartnerAdmin:
+        isThrowForbiddenException = !requestUser.partnerId;
+
+        break;
+
+      case UserType.PartnerUser:
+        isThrowForbiddenException = !requestUser.partnerChannelId;
+
+        break;
+
+      case UserType.FulfillmentAdmin:
+        isThrowForbiddenException = !requestUser.fulfillmentId;
+
+        break;
+
+      case UserType.FulfillmentUser:
+        isThrowForbiddenException = !requestUser.fulfillmentCenterId;
+
+        break;
+    }
+
+    if (isThrowForbiddenException) {
       throw new ForbiddenException();
     }
 

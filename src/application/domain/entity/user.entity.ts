@@ -10,7 +10,7 @@ import { PasswordColumnTransformer } from '@/constant/transformer/password.trans
 import { PasswordVO } from '@/constant/vo/password.vo';
 
 @Entity({ name: 'user', comment: '사용자' })
-@Unique('email', ['email'])
+@Unique('unique', ['email'])
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '사용자 PK' })
   readonly id: string;
