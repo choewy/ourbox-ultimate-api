@@ -3,7 +3,6 @@ import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 
 import { VerifyJwtResult } from './types';
 
-import { UserStatus } from '@/application/domain/constant/enums';
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { ApplicationConfigFactory } from '@/common/config/factory/application-config.factory';
 
@@ -15,10 +14,8 @@ export class AuthService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async getActivateUser(id: string) {
-    const user = await this.userRepository.findOneById(id);
-
-    return user?.status === UserStatus.Activated ? user : null;
+  async getUser(id: string) {
+    return this.userRepository.findOneById(id);
   }
 
   verifyAccessToken(accessToken: string, isExpired: boolean = false): VerifyJwtResult {
