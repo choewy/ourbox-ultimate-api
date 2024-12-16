@@ -66,7 +66,7 @@ export class ApplicationConfigFactory {
           subject: [suffix, 'access-token'].join(':'),
           issuer: [suffix, 'server'].join(':'),
           audience: [suffix, 'user'].join(':'),
-          expiresIn: '3s',
+          expiresIn: '1h',
         },
         verifyOptions: {
           secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
@@ -81,7 +81,7 @@ export class ApplicationConfigFactory {
           subject: [suffix, 'refresh-token'].join(':'),
           issuer: [suffix, 'server'].join(':'),
           audience: [suffix, 'user'].join(':'),
-          expiresIn: '1m',
+          expiresIn: '20d',
         },
         verifyOptions: {
           secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),

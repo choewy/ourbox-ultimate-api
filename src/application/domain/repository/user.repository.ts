@@ -27,4 +27,8 @@ export class UserRepository extends Repository<User> {
   async findOneByEmail(email: string) {
     return this.findOne({ where: { email } });
   }
+
+  async hasEmail(email: string) {
+    return this.existsBy({ email });
+  }
 }
