@@ -1,9 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
-import { CreateUserDTO } from './dto/create-user.dto';
-
 import { UserType } from '@/application/domain/constant/enums';
 import { UserRepository } from '@/application/domain/repository/user.repository';
+import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { PasswordVO } from '@/constant/vo/password.vo';
 
 @Injectable()

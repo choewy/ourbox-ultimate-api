@@ -1,12 +1,11 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 
-import { JwtDTO } from './dto/jwt.dto';
-import { SignInDTO } from './dto/signin.dto';
-import { VerifyJwtResult } from './types';
-
 import { UserStatus } from '@/application/domain/constant/enums';
 import { UserRepository } from '@/application/domain/repository/user.repository';
+import { SignInDTO } from '@/application/dto/request/signin.dto';
+import { JwtDTO } from '@/application/dto/response/jwt.dto';
+import { VerifyJwtResult } from '@/application/dto/types';
 import { ApplicationConfigFactory } from '@/common/config/factory/application-config.factory';
 
 @Injectable()

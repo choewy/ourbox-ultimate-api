@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Unauthor
 import { Reflector } from '@nestjs/core';
 
 import { AuthService } from './auth.service';
-import { REQUIRED_AUTH } from './decorator/required-auth';
+import { REQUIRED_AUTH } from '../../decorator/required-auth';
 
 import { UserStatus } from '@/application/domain/constant/enums';
 import { RequestContextService } from '@/common/request-context/request-context.service';

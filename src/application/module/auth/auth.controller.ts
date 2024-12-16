@@ -2,8 +2,9 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { JwtDTO } from './dto/jwt.dto';
-import { SignInDTO } from './dto/signin.dto';
+
+import { SignInDTO } from '@/application/dto/request/signin.dto';
+import { JwtDTO } from '@/application/dto/response/jwt.dto';
 
 @ApiTags('인증/인가')
 @Controller('auth')

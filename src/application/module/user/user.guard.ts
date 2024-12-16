@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ONLY_USER_TYPE } from './decorator/only-user-type';
+import { ONLY_USER_TYPE } from '../../decorator/only-user-type';
 
 import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';

@@ -1,12 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { OnlyUserType } from './decorator/only-user-type';
-import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
-import { RequiredAuth } from '../auth/decorator/required-auth';
 
+import { OnlyUserType } from '@/application/decorator/only-user-type';
+import { RequiredAuth } from '@/application/decorator/required-auth';
 import { UserType } from '@/application/domain/constant/enums';
+import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 
 @ApiTags('사용자')
 @RequiredAuth()
