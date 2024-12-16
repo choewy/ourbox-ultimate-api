@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ONLY_USER_TYPE } from '../../decorator/only-user-type';
-
+import { ONLY_USER_TYPES } from '@/application/decorator/only-user-type';
 import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 
@@ -14,9 +13,9 @@ export class UserTypeGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const userType = this.reflector.getAllAndOverride(ONLY_USER_TYPE, [context.getClass(), context.getHandler()]);
+    const userTypes = this.reflector.getAllAndOverride(ONLY_USER_TYPES, [context.getClass(), context.getHandler()]);
 
-    if (!userType) {
+    if (Array.isArray(userTypes) === false) {
       return true;
     }
 
@@ -26,7 +25,7 @@ export class UserTypeGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    if (userType !== requestUser.type) {
+    if (!userTypes.includes(requestUser.type)) {
       throw new ForbiddenException();
     }
 
