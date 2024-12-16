@@ -5,10 +5,12 @@ import { PasswordVO } from '../vo/password.vo';
 
 export class PasswordColumnTransformer implements ValueTransformer {
   from(value: string): PasswordVO {
+    console.log({ from: value });
     return new PasswordVO(null, value);
   }
 
   to(vo: PasswordVO): string {
+    console.log({ to: vo });
     return vo.valueOf();
   }
 }

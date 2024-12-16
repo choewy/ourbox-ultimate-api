@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 
+import { JwtDTO } from './dto/jwt.dto';
+import { SignInDTO } from './dto/signin.dto';
 import { VerifyJwtResult } from './types';
 
+import { UserStatus } from '@/application/domain/constant/enums';
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { ApplicationConfigFactory } from '@/common/config/factory/application-config.factory';
 
@@ -13,6 +16,20 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
   ) {}
+
+  async signIn(signInDTO: SignInDTO) {
+    const user = await this.userRepository.findOneByEmail(signInDTO.email);
+
+    if (!user || !user.password.compare(signInDTO.password)) {
+      throw new UnauthorizedException();
+    }
+
+    if (user.status !== UserStatus.Activated) {
+      throw new ForbiddenException();
+    }
+
+    return new JwtDTO(this.issueAccessToken(user.id), this.issueRefreshToken(user.id));
+  }
 
   async getUser(id: string) {
     return this.userRepository.findOneById(id);

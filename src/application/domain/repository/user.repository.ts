@@ -23,4 +23,8 @@ export class UserRepository extends Repository<User> {
       where: { id },
     });
   }
+
+  async findOneByEmail(email: string) {
+    return this.findOne({ where: { email } });
+  }
 }
