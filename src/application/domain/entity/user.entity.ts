@@ -66,4 +66,30 @@ export class User {
   @ManyToOne(() => FulfillmentCenter, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn()
   fulfillmentCenter: FulfillmentCenter | null;
+
+  public getPartnerId(partnerId?: string) {
+    switch (this.type) {
+      case UserType.PartnerAdmin:
+        return this.partnerId;
+
+      case UserType.PartnerUser:
+        return this.partnerChannel?.partnerId;
+
+      default:
+        return partnerId ?? null;
+    }
+  }
+
+  public getFulfillmentId(fulfillmentId?: number) {
+    switch (this.type) {
+      case UserType.FulfillmentAdmin:
+        return this.fulfillmentId;
+
+      case UserType.FulfillmentUser:
+        return this.fulfillmentCenter?.fulfillmentId;
+
+      default:
+        return fulfillmentId ?? null;
+    }
+  }
 }

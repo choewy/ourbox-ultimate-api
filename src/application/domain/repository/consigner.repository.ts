@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
 
-import { Purchaser } from '../entity/purchaser.entity';
+import { Consigner } from '../entity/consigner.entity';
 
 @Injectable()
-export class PurchaserRepository extends Repository<Purchaser> {
+export class ConsignerRepository extends Repository<Consigner> {
   constructor(
     readonly datatSource: DataSource,
     readonly entityManager?: EntityManager,
   ) {
-    super(Purchaser, entityManager ?? datatSource.createEntityManager());
+    super(Consigner, entityManager ?? datatSource.createEntityManager());
   }
 
   async findOneById(id: string) {

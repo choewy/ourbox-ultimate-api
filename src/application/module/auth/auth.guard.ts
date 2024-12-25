@@ -7,7 +7,7 @@ import { REQUIRED_AUTH } from '../../decorator/required-auth';
 import { UserStatus } from '@/application/domain/constant/enums';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { RequestHeader, ResponseHeader } from '@/constant/enums';
-import { InActivatedAccountException, InvalidTokenException } from '@/constant/exceptions';
+import { InActivatedAccountException, InvalidTokenException, LoginRequiredException } from '@/constant/exceptions';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,7 +27,12 @@ export class AuthGuard implements CanActivate {
     }
 
     const headers = this.requestContextService.getRequest().headers;
-    const accessToken = String(headers[RequestHeader.Authorization]).replace('Bearer ', '');
+    const accessToken = String(headers[RequestHeader.Authorization] ?? '').replace('Bearer ', '');
+
+    if (!accessToken) {
+      throw new LoginRequiredException();
+    }
+
     const accessTokenResult = this.authService.verifyAccessToken(accessToken);
 
     if (!accessTokenResult.ok || !accessTokenResult.id || (accessTokenResult.error && !accessTokenResult.isExpired)) {
