@@ -26,6 +26,12 @@ export class ServiceErrorException {
   }
 }
 
+export class LoginRequiredException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.LoginRequired, HttpStatus.UNAUTHORIZED);
+  }
+}
+
 export class InvalidTokenException extends ServiceErrorException {
   constructor() {
     super(ServiceErrorCode.InvalidToken, HttpStatus.UNAUTHORIZED);
@@ -41,5 +47,17 @@ export class WrongEmailOrPasswordException extends ServiceErrorException {
 export class InActivatedAccountException extends ServiceErrorException {
   constructor() {
     super(ServiceErrorCode.InActivatedAccount, HttpStatus.FORBIDDEN);
+  }
+}
+
+export class AccessDeninedException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.AccessDenined, HttpStatus.FORBIDDEN);
+  }
+}
+
+export class AlreadyExistEmailException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.AlreadyExistUserEmail, HttpStatus.CONFLICT);
   }
 }

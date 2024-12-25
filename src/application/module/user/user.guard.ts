@@ -1,10 +1,11 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { REQUIRED_USER_TYPES } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';
+import { AccessDeninedException, LoginRequiredException } from '@/constant/exceptions';
 
 @Injectable()
 export class UserTypeGuard implements CanActivate {
@@ -23,11 +24,11 @@ export class UserTypeGuard implements CanActivate {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
     if (!requestUser) {
-      throw new UnauthorizedException();
+      throw new LoginRequiredException();
     }
 
     if (!requiredUserTypes.includes(requestUser.type)) {
-      throw new ForbiddenException();
+      throw new AccessDeninedException();
     }
 
     let isThrowForbiddenException = false;
@@ -55,7 +56,7 @@ export class UserTypeGuard implements CanActivate {
     }
 
     if (isThrowForbiddenException) {
-      throw new ForbiddenException();
+      throw new AccessDeninedException();
     }
 
     return true;
