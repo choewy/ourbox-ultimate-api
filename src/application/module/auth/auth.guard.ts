@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { AuthService } from './auth.service';
@@ -7,6 +7,7 @@ import { REQUIRED_AUTH } from '../../decorator/required-auth';
 import { UserStatus } from '@/application/domain/constant/enums';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { RequestHeader, ResponseHeader } from '@/constant/enums';
+import { InActivatedAccountException, InvalidTokenException } from '@/constant/exceptions';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,17 +31,17 @@ export class AuthGuard implements CanActivate {
     const accessTokenResult = this.authService.verifyAccessToken(accessToken);
 
     if (!accessTokenResult.ok || !accessTokenResult.id || (accessTokenResult.error && !accessTokenResult.isExpired)) {
-      throw new UnauthorizedException();
+      throw new InvalidTokenException();
     }
 
     const user = await this.authService.getUser(accessTokenResult.id);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new InvalidTokenException();
     }
 
     if (user.status !== UserStatus.Activated) {
-      throw new ForbiddenException();
+      throw new InActivatedAccountException();
     }
 
     this.requestContextService.setRequestUser(user);
@@ -50,7 +51,7 @@ export class AuthGuard implements CanActivate {
       const refreshTokenResult = this.authService.verifyRefreshToken(refreshToken);
 
       if (!refreshTokenResult.ok || refreshTokenResult.error || refreshTokenResult.id !== accessTokenResult.id) {
-        throw new UnauthorizedException();
+        throw new InvalidTokenException();
       }
 
       const response = this.requestContextService.getResponse();
