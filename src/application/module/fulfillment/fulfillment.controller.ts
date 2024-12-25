@@ -38,12 +38,12 @@ export class FulfillmentController {
     return this.fulfillmentService.createFulfillment(body);
   }
 
-  @Get('channels')
-  @RequiredUserTypes(UserType.Admin, UserType.PartnerUser)
+  @Get('centers')
+  @RequiredUserTypes(UserType.Admin, UserType.FulfillmentAdmin)
   @ApiOperation({ summary: '풀필먼트 센터 목록 조회' })
   @ApiOkResponse({ type: FulfillmentCentersDTO })
   @ApiException()
-  async getPartnerChannels(@Query() queryParam: GetFulfillmentCentersParamDTO) {
+  async getFulfillmentCenters(@Query() queryParam: GetFulfillmentCentersParamDTO) {
     return this.fulfillmentService.getFulfillmentCenters(queryParam);
   }
 
