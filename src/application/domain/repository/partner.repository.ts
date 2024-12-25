@@ -11,4 +11,11 @@ export class PartnerRepository extends Repository<Partner> {
   ) {
     super(Partner, entityManager ?? datatSource.createEntityManager());
   }
+
+  async findManyAndCount(skip = 0, take = 20) {
+    return this.findAndCount({
+      skip,
+      take,
+    });
+  }
 }

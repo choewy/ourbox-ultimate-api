@@ -5,6 +5,10 @@ import { PartnerChannelRepository } from '@/application/domain/repository/partne
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { CreatePartnerChannelDTO } from '@/application/dto/request/create-partner-channel.dto';
 import { CreatePartnerDTO } from '@/application/dto/request/create-partner.dto';
+import { GetPartnerChannelsParamDTO } from '@/application/dto/request/get-partner-channels-param.dto';
+import { GetPartnersParamDTO } from '@/application/dto/request/get-partners-param.dto';
+import { PartnerChannelsDTO } from '@/application/dto/response/partner-channels.dto';
+import { PartnersDTO } from '@/application/dto/response/partners.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 
 @Injectable()
@@ -15,18 +19,29 @@ export class PartnerService {
     private readonly partnerChannelRepository: PartnerChannelRepository,
   ) {}
 
-  async createPartner(createPartnerDTO: CreatePartnerDTO) {
-    await this.partnerRepository.insert({
-      name: createPartnerDTO.name,
-    });
+  async getPartners(param: GetPartnersParamDTO) {
+    const rowsAndCount = await this.partnerRepository.findManyAndCount(param.skip, param.take);
+
+    return new PartnersDTO(param, rowsAndCount);
   }
 
-  async createPartnerChannel(createPartnerChannelDTO: CreatePartnerChannelDTO) {
+  async createPartner(body: CreatePartnerDTO) {
+    await this.partnerRepository.insert({ name: body.name });
+  }
+
+  async getPartnerChannels(param: GetPartnerChannelsParamDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const rowsAndCount = await this.partnerChannelRepository.findManyAndCount(requestUser.getPartnerId(param.partnerId), param.skip, param.take);
+
+    return new PartnerChannelsDTO(param, rowsAndCount);
+  }
+
+  async createPartnerChannel(body: CreatePartnerChannelDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
     await this.partnerChannelRepository.insert({
-      partnerId: requestUser.partnerId,
-      name: createPartnerChannelDTO.name,
+      partnerId: requestUser.getPartnerId(body.partnerId),
+      name: body.name,
     });
   }
 }

@@ -69,6 +69,9 @@ export class User {
 
   public getPartnerId(partnerId?: string) {
     switch (this.type) {
+      case UserType.Admin:
+        return partnerId ?? null;
+
       case UserType.PartnerAdmin:
         return this.partnerId;
 
@@ -76,12 +79,15 @@ export class User {
         return this.partnerChannel?.partnerId;
 
       default:
-        return partnerId ?? null;
+        return null;
     }
   }
 
   public getFulfillmentId(fulfillmentId?: number) {
     switch (this.type) {
+      case UserType.Admin:
+        return fulfillmentId ?? null;
+
       case UserType.FulfillmentAdmin:
         return this.fulfillmentId;
 
@@ -89,7 +95,7 @@ export class User {
         return this.fulfillmentCenter?.fulfillmentId;
 
       default:
-        return fulfillmentId ?? null;
+        return null;
     }
   }
 }
