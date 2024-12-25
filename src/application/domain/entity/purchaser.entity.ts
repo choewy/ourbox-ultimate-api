@@ -10,6 +10,18 @@ export class Purchaser {
   @Column({ type: 'varchar', length: 50, comment: '매입처명' })
   name: string;
 
+  @Column({ type: 'varchar', length: 7, comment: '우편번호' })
+  zipCode: string;
+
+  @Column({ type: 'varchar', length: 255, comment: '주소' })
+  address: string;
+
+  @Column({ type: 'varchar', length: 255, comment: '상세주소' })
+  detailAddress: string;
+
+  @Column({ type: 'varchar', length: 20, comment: '연락처' })
+  contact: string;
+
   @CreateDateColumn({ comment: '생성일시' })
   createdAt: Date;
 
