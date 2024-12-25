@@ -34,4 +34,8 @@ export class UserController {
   async createUser(@Body() body: CreateUserDTO) {
     return this.userService.createUser(body);
   }
+
+  // TODO update
+  // TODO delete one
+  // TODO delete many
 }

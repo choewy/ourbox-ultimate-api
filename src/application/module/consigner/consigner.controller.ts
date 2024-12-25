@@ -34,4 +34,8 @@ export class ConsignerController {
   async createConsigner(@Body() body: CreateConsignerDTO) {
     return this.consignerService.createConsigner(body);
   }
+
+  // TODO update
+  // TODO delete one
+  // TODO delete many
 }

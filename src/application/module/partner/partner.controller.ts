@@ -10,6 +10,7 @@ import { CreatePartnerChannelDTO } from '@/application/dto/request/create-partne
 import { CreatePartnerDTO } from '@/application/dto/request/create-partner.dto';
 import { GetPartnerChannelsParamDTO } from '@/application/dto/request/get-partner-channels-param.dto';
 import { GetPartnersParamDTO } from '@/application/dto/request/get-partners-param.dto';
+import { PartnerChannelsDTO } from '@/application/dto/response/partner-channels.dto';
 import { PartnersDTO } from '@/application/dto/response/partners.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
@@ -40,7 +41,7 @@ export class PartnerController {
   @Get('channels')
   @RequiredUserTypes(UserType.Admin, UserType.PartnerUser)
   @ApiOperation({ summary: '고객사 판매채널 목록 조회' })
-  @ApiOkResponse({ type: PartnersDTO })
+  @ApiOkResponse({ type: PartnerChannelsDTO })
   @ApiException()
   async getPartnerChannels(@Query() queryParam: GetPartnerChannelsParamDTO) {
     return this.partnerService.getPartnerChannels(queryParam);
@@ -54,4 +55,8 @@ export class PartnerController {
   async createPartnerChannel(@Body() body: CreatePartnerChannelDTO) {
     return this.partnerService.createPartnerChannel(body);
   }
+
+  // TODO update
+  // TODO delete one
+  // TODO delete many
 }

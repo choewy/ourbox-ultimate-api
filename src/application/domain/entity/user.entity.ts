@@ -83,7 +83,7 @@ export class User {
     }
   }
 
-  public getFulfillmentId(fulfillmentId?: number) {
+  public getFulfillmentId(fulfillmentId?: string) {
     switch (this.type) {
       case UserType.Admin:
         return fulfillmentId ?? null;

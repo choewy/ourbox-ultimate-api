@@ -34,4 +34,8 @@ export class PurchaserController {
   async createConsigner(@Body() body: CreatePurchaserDTO) {
     return this.purchaserService.createConsigner(body);
   }
+
+  // TODO update
+  // TODO delete one
+  // TODO delete many
 }

@@ -12,7 +12,7 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
     super(PartnerChannel, entityManager ?? datatSource.createEntityManager());
   }
 
-  async findManyAndCount(partnerId = null, skip: number, take: number) {
+  async findManyAndCount(skip: number, take: number, partnerId = null) {
     return this.findAndCount({
       relations: { partner: true },
       where: { partnerId: Or(IsNull(), Equal(partnerId)) },

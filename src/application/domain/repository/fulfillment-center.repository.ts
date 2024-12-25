@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
 
 import { FulfillmentCenter } from '../entity/fulfillment-center.entity';
 
@@ -20,6 +20,15 @@ export class FulfillmentCenterRepository extends Repository<FulfillmentCenter> {
     return this.findOne({
       relations: { fulfillment: true },
       where: { id },
+    });
+  }
+
+  async findManyAndCount(skip: number, take: number, fulfillmentId = null) {
+    return this.findAndCount({
+      relations: { fulfillment: true },
+      where: { fulfillmentId: Or(IsNull(), Equal(fulfillmentId)) },
+      skip,
+      take,
     });
   }
 }

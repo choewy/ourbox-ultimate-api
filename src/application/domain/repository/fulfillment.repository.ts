@@ -12,6 +12,13 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
     super(Fulfillment, entityManager ?? datatSource.createEntityManager());
   }
 
+  async findManyAndCount(skip: number, take: number) {
+    return this.findAndCount({
+      skip,
+      take,
+    });
+  }
+
   async findOneById(id: string) {
     return this.findOne({
       where: { id },

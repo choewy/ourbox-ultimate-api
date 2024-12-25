@@ -31,7 +31,7 @@ export class PartnerService {
 
   async getPartnerChannels(param: GetPartnerChannelsParamDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
-    const rowsAndCount = await this.partnerChannelRepository.findManyAndCount(requestUser.getPartnerId(param.partnerId), param.skip, param.take);
+    const rowsAndCount = await this.partnerChannelRepository.findManyAndCount(param.skip, param.take, requestUser.getPartnerId(param.partnerId));
 
     return new PartnerChannelsDTO(param, rowsAndCount);
   }

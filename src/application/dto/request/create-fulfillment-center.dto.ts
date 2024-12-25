@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class CreateFulfillmentCenterDTO {
   @ApiProperty({ type: String })
@@ -11,4 +11,9 @@ export class CreateFulfillmentCenterDTO {
   @IsNumberString()
   @IsNotEmpty()
   code: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsNumberString()
+  @IsOptional()
+  fulfillmentId?: string;
 }
