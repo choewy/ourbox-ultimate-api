@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsEnum, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 import { EDITABLE_USER_TYPES } from '@/application/domain/constant/constant';
 import { UserType } from '@/application/domain/constant/enums';
@@ -30,4 +30,24 @@ export class CreateUserDTO {
   @IsSameString('password')
   @IsNotEmpty()
   confirmPassword: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsNumberString()
+  @IsOptional()
+  partnerId?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsNumberString()
+  @IsOptional()
+  partnerChannelId?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsNumberString()
+  @IsOptional()
+  fulfillmentId?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsNumberString()
+  @IsOptional()
+  fulfillmentCenterId?: string;
 }

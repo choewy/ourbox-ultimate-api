@@ -20,4 +20,11 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
       take,
     });
   }
+
+  async findOneById(id: string) {
+    return this.findOne({
+      relations: { partner: true },
+      where: { id },
+    });
+  }
 }

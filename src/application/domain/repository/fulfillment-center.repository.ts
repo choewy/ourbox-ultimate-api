@@ -15,4 +15,11 @@ export class FulfillmentCenterRepository extends Repository<FulfillmentCenter> {
   async hasKey(fulfillmentId: string, code: string) {
     return this.existsBy({ fulfillmentId, code });
   }
+
+  async findOneById(id: string) {
+    return this.findOne({
+      relations: { fulfillment: true },
+      where: { id },
+    });
+  }
 }

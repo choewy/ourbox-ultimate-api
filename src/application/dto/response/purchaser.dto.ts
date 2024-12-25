@@ -1,5 +1,7 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
+import { PartnerDTO } from './partner.dto';
+
 import { Purchaser } from '@/application/domain/entity/purchaser.entity';
 
 export class PurchaserDTO {
@@ -24,6 +26,9 @@ export class PurchaserDTO {
   @ApiResponseProperty({ type: Date })
   updatedAt: Date;
 
+  @ApiResponseProperty({ type: () => PartnerDTO })
+  partner?: PartnerDTO;
+
   constructor(purchaser: Purchaser) {
     this.id = purchaser.id;
     this.name = purchaser.name;
@@ -32,5 +37,6 @@ export class PurchaserDTO {
     this.detailAddress = purchaser.detailAddress;
     this.createdAt = purchaser.createdAt;
     this.updatedAt = purchaser.updatedAt;
+    this.partner = purchaser.partner ? new PartnerDTO(purchaser.partner) : null;
   }
 }

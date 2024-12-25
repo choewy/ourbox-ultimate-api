@@ -67,3 +67,27 @@ export class AlreadyExistFulfillmentCenterCodeException extends ServiceErrorExce
     super(ServiceErrorCode.AlreadyExistFulfillmentCenterCode, HttpStatus.CONFLICT);
   }
 }
+
+export class NotFoundPartnerException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundPartner, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundPartnerChannelException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundPartnerChannel, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundFulfillmentException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundFulfillment, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundFulfillmentCenterException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundFulfillmentCenter, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}

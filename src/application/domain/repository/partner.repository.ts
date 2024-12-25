@@ -18,4 +18,10 @@ export class PartnerRepository extends Repository<Partner> {
       take,
     });
   }
+
+  async findOneById(id: string) {
+    return this.findOne({
+      where: { id },
+    });
+  }
 }

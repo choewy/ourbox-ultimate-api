@@ -11,4 +11,10 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
   ) {
     super(Fulfillment, entityManager ?? datatSource.createEntityManager());
   }
+
+  async findOneById(id: string) {
+    return this.findOne({
+      where: { id },
+    });
+  }
 }

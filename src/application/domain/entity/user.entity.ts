@@ -15,7 +15,7 @@ export class User {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '사용자 PK' })
   readonly id: string;
 
-  @Column({ type: 'varchar', length: 10, comment: '구분' })
+  @Column({ type: 'varchar', length: 20, comment: '구분' })
   type: UserType;
 
   @Column({ type: 'varchar', length: 340, comment: '이메일' })
