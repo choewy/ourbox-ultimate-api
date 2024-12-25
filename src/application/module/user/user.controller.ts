@@ -20,7 +20,7 @@ export class UserController {
   @RequiredUserTypes(UserType.Admin)
   @ApiOperation({ summary: '사용자 계정 생성', description: createOperationDescription(UserType.Admin) })
   @ApiCreatedResponse()
-  @ApiException(HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.CONFLICT)
+  @ApiException(HttpStatus.CONFLICT)
   async createUser(@Body() createUserDTO: CreateUserDTO) {
     return this.userService.createUser(createUserDTO);
   }

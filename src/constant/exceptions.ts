@@ -61,3 +61,9 @@ export class AlreadyExistEmailException extends ServiceErrorException {
     super(ServiceErrorCode.AlreadyExistUserEmail, HttpStatus.CONFLICT);
   }
 }
+
+export class AlreadyExistFulfillmentCenterCodeException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.AlreadyExistFulfillmentCenterCode, HttpStatus.CONFLICT);
+  }
+}

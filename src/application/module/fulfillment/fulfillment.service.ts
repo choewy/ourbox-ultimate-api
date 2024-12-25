@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { User } from '@/application/domain/entity/user.entity';
 import { FulfillmentCenterRepository } from '@/application/domain/repository/fulfillment-center.repository';
@@ -6,6 +6,7 @@ import { FulfillmentRepository } from '@/application/domain/repository/fulfillme
 import { CreateFulfillmentCenterDTO } from '@/application/dto/request/create-fulfillment-center.dto';
 import { CreateFulfillmentDTO } from '@/application/dto/request/create-fulfillment.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
+import { AlreadyExistFulfillmentCenterCodeException } from '@/constant/exceptions';
 
 @Injectable()
 export class FulfillmentService {
@@ -25,7 +26,7 @@ export class FulfillmentService {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
     if (await this.fulfillmentCenterRepository.hasKey(requestUser.fulfillmentId, createFulfillmentCenterDTO.code)) {
-      throw new ConflictException();
+      throw new AlreadyExistFulfillmentCenterCodeException();
     }
 
     await this.fulfillmentCenterRepository.insert({

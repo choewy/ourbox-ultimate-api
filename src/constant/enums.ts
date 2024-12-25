@@ -23,7 +23,7 @@ export enum ServiceErrorCode {
   NotFoundUser = '201',
   NotFoundPartner = '300',
   NotFoundPartnerChannel = '301',
-  AlreadyExistFulfillmentCenter = '400',
+  AlreadyExistFulfillmentCenterCode = '400',
   NotFoundFulfillment = '401',
   NotFoundFulfillmentCenter = '402',
 }

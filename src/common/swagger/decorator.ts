@@ -5,7 +5,11 @@ import { ExceptionDTO } from '@/constant/dto/exception.dto';
 
 export const ApiException = (...statusCodes: HttpStatus[]) => {
   if (!Array.isArray(statusCodes)) {
-    return ApiResponse({ type: ExceptionDTO });
+    statusCodes = [];
+  }
+
+  if (statusCodes.length === 0) {
+    statusCodes.push(HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN);
   }
 
   const decorators: MethodDecorator[] = [];

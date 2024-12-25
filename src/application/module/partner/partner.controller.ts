@@ -8,6 +8,7 @@ import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreatePartnerChannelDTO } from '@/application/dto/request/create-partner-channel.dto';
 import { CreatePartnerDTO } from '@/application/dto/request/create-partner.dto';
+import { ApiException } from '@/common/swagger/decorator';
 import { createOperationDescription } from '@/common/swagger/helper';
 
 @ApiTags('고객사')
@@ -20,6 +21,7 @@ export class PartnerController {
   @RequiredUserTypes(UserType.Admin)
   @ApiOperation({ summary: '고객사 등록', description: createOperationDescription(UserType.Admin) })
   @ApiCreatedResponse()
+  @ApiException()
   async createPartner(@Body() createPartnerDTO: CreatePartnerDTO) {
     return this.partnerService.createPartner(createPartnerDTO);
   }
@@ -28,6 +30,7 @@ export class PartnerController {
   @RequiredUserTypes(UserType.PartnerAdmin)
   @ApiOperation({ summary: '고객사 판매채널 등록', description: createOperationDescription(UserType.PartnerAdmin) })
   @ApiCreatedResponse()
+  @ApiException()
   async createPartnerChannel(@Body() createPartnerChannelDTO: CreatePartnerChannelDTO) {
     return this.partnerService.createPartnerChannel(createPartnerChannelDTO);
   }

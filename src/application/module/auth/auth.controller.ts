@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
@@ -15,7 +15,7 @@ export class AuthController {
   @Post('signin')
   @ApiOperation({ summary: '로그인' })
   @ApiCreatedResponse({ type: JwtDTO })
-  @ApiException(HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN)
+  @ApiException()
   async signIn(@Body() signInDTO: SignInDTO) {
     return this.authService.signIn(signInDTO);
   }
