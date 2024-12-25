@@ -1,22 +1,36 @@
-import { ArgumentsHost, Catch, ExceptionFilter as NestExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter as NestExceptionFilter, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+
+import { ExceptionDTO } from '@/constant/dto/exception.dto';
+import { ServiceErrorException, ValidationFailedException } from '@/constant/exceptions';
 
 @Catch()
 export class ExceptionFilter implements NestExceptionFilter {
-  catch(e: HttpException | Error, host: ArgumentsHost) {
+  catch(e: HttpException | ValidationFailedException | ServiceErrorException | Error, host: ArgumentsHost) {
     const http = host.switchToHttp();
     const request = http.getRequest<Request>();
     const response = http.getResponse<Response>();
 
-    const exception = e instanceof HttpException ? e : new InternalServerErrorException(e, { cause: { name: e.name, message: e.message } });
-    const exceptionName = Object.getPrototypeOf(e).constructor.name.replace('Exception', '');
+    let exceptionDTO: ExceptionDTO;
 
-    return response.status(exception.getStatus()).send({
-      id: request['id'],
-      name: exceptionName,
-      statusCode: exception.getStatus(),
-      message: exception.message,
-      cause: exception.cause,
-    });
+    switch (true) {
+      case e instanceof ServiceErrorException:
+        exceptionDTO = ExceptionDTO.ofServiceErrorException(request, e);
+        break;
+
+      case e instanceof ValidationFailedException:
+        exceptionDTO = ExceptionDTO.ofValidationFailedException(request, e);
+        break;
+
+      case e instanceof HttpException:
+        exceptionDTO = ExceptionDTO.ofHttpException(request, e);
+        break;
+
+      default:
+        exceptionDTO = ExceptionDTO.ofError(request, e);
+        break;
+    }
+
+    return response.status(exceptionDTO.statusCode).send(exceptionDTO);
   }
 }

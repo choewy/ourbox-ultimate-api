@@ -1,13 +1,6 @@
-import { BadRequestException, Injectable, ValidationPipe as NestValidationPipe, ValidationError } from '@nestjs/common';
+import { Injectable, ValidationPipe as NestValidationPipe } from '@nestjs/common';
 
-export class ValidationException extends BadRequestException {
-  constructor(errors: ValidationError[]) {
-    super();
-
-    this.name = ValidationException.name;
-    this.cause = errors;
-  }
-}
+import { ValidationFailedException } from '@/constant/exceptions';
 
 @Injectable()
 export class ValidationPipe extends NestValidationPipe {
@@ -20,7 +13,7 @@ export class ValidationPipe extends NestValidationPipe {
       },
       stopAtFirstError: true,
       exceptionFactory(errors) {
-        return new ValidationException(errors);
+        return new ValidationFailedException(errors);
       },
     });
   }
