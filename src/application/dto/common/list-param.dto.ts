@@ -6,11 +6,11 @@ export class ListParamDTO {
   @Min(0)
   @IsInt()
   @IsOptional()
-  skip?: number;
+  skip: number = 0;
 
   @ApiPropertyOptional({ type: Number })
   @Min(0)
   @IsInt()
   @IsOptional()
-  take?: number;
+  take: number = 20;
 }

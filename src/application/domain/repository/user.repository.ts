@@ -32,7 +32,7 @@ export class UserRepository extends Repository<User> {
     return this.existsBy({ email });
   }
 
-  async findManyAndCount(skip = 0, take = 20) {
+  async findManyAndCount(skip: number, take: number) {
     return this.findAndCount({
       relations: {
         partner: true,

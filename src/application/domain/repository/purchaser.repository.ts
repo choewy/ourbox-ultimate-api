@@ -19,7 +19,7 @@ export class PurchaserRepository extends Repository<Purchaser> {
     });
   }
 
-  async findManyAndCount(partnerId = null, skip = 0, take = 20) {
+  async findManyAndCount(partnerId = null, skip: number, take: number) {
     return this.findAndCount({
       relations: { partner: true },
       where: { partnerId: Or(IsNull(), Equal(partnerId)) },
