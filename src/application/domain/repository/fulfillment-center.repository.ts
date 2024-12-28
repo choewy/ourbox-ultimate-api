@@ -18,12 +18,7 @@ export class FulfillmentCenterRepository extends Repository<FulfillmentCenter> {
   }
 
   async hasById(id: string) {
-    const fulfillment = await this.findOne({
-      select: { id: true },
-      where: { id },
-    });
-
-    return !!fulfillment?.id;
+    return !!(await this.findOne({ select: { id: true }, where: { id } }))?.id;
   }
 
   async findOneById(id: string) {

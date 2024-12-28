@@ -48,7 +48,7 @@ export class FulfillmentService {
 
   async deleteFulfillment(id: string) {
     if (!(await this.fulfillmentRepository.hasById(id))) {
-      throw new NotFoundFulfillmentException();
+      throw new NotFoundFulfillmentException(id);
     }
 
     await this.fulfillmentRepository.deleteOneById(id);
@@ -79,7 +79,7 @@ export class FulfillmentService {
     const fulfillmentCenter = await this.fulfillmentCenterRepository.findOneById(id);
 
     if (!fulfillmentCenter) {
-      throw new NotFoundFulfillmentCenterException();
+      throw new NotFoundFulfillmentCenterException(id);
     }
 
     if (body.code && (await this.fulfillmentCenterRepository.hasKey(fulfillmentCenter.fulfillmentId, body.code))) {
@@ -94,7 +94,7 @@ export class FulfillmentService {
 
   async deleteFulfillmentCenter(id: string) {
     if (!(await this.fulfillmentCenterRepository.hasById(id))) {
-      throw new NotFoundFulfillmentCenterException();
+      throw new NotFoundFulfillmentCenterException(id);
     }
 
     await this.fulfillmentCenterRepository.deleteOneById(id);

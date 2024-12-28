@@ -15,12 +15,7 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
   }
 
   async hasById(id: string) {
-    const fulfillment = await this.findOne({
-      select: { id: true },
-      where: { id },
-    });
-
-    return !!fulfillment?.id;
+    return !!(await this.findOne({ select: { id: true }, where: { id } }))?.id;
   }
 
   async findManyAndCount(skip: number, take: number) {
@@ -36,7 +31,7 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
 
   async deleteOneById(id: string) {
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(User).update({ fulfillmentId: id }, { fulfillment: null });
+      await em.getRepository(User).update({ fulfillmentId: id }, { fulfillment: null, fulfillmentCenter: null });
       await em.getRepository(FulfillmentCenter).softDelete({ fulfillmentId: id });
       await em.getRepository(Fulfillment).softDelete({ id });
     });
