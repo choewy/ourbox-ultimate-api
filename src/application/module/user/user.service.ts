@@ -12,6 +12,7 @@ import { PartnerRepository } from '@/application/domain/repository/partner.repos
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { GetUserssParamDTO } from '@/application/dto/request/get-users-param.dto';
+import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UsersDTO } from '@/application/dto/response/users.dto';
 import {
   AlreadyExistEmailException,
@@ -19,9 +20,10 @@ import {
   NotFoundFulfillmentException,
   NotFoundPartnerChannelException,
   NotFoundPartnerException,
+  NotFoundUserException,
   ValidationFailedException,
 } from '@/constant/exceptions';
-import { PasswordVO } from '@/constant/vo/password.vo';
+import { ObjectUtil } from '@/constant/util/object.util';
 
 @Injectable()
 export class UserService {
@@ -148,12 +150,46 @@ export class UserService {
     await this.userRepository.insert({
       type: body.type,
       email: body.email,
-      password: new PasswordVO(body.password),
+      password: body.password,
       name: body.name,
       partner,
       partnerChannel,
       fulfillment,
       fulfillmentCenter,
     });
+  }
+
+  async updateUser(id: string, body: UpdateUserDTO) {
+    const user = await this.userRepository.findOneById(id);
+
+    if (!user) {
+      throw new NotFoundUserException(id);
+    }
+
+    if (body.partnerId && !(await this.partnerRepository.hasById(body.partnerId))) {
+      throw new NotFoundPartnerException(body.partnerId);
+    }
+
+    if (body.partnerChannelId && !(await this.partnerChannelRepository.hasById(body.partnerChannelId))) {
+      throw new NotFoundPartnerChannelException(body.partnerChannelId);
+    }
+
+    if (body.fulfillmentId && !(await this.fulfillmentRepository.hasById(body.fulfillmentId))) {
+      throw new NotFoundFulfillmentException(body.fulfillmentId);
+    }
+
+    if (body.fulfillmentCenterId && !(await this.fulfillmentCenterRepository.hasById(body.fulfillmentCenterId))) {
+      throw new NotFoundFulfillmentCenterException(body.fulfillmentCenterId);
+    }
+
+    await this.userRepository.update(id, new ObjectUtil(user, body).getValues());
+  }
+
+  async deleteUser(id: string) {
+    if (!(await this.userRepository.hasById(id))) {
+      throw new NotFoundUserException(id);
+    }
+
+    await this.userRepository.deleteOneById(id);
   }
 }

@@ -12,6 +12,10 @@ export class UserRepository extends Repository<User> {
     super(User, entityManager ?? datatSource.createEntityManager());
   }
 
+  async hasById(id: string) {
+    return !!(await this.findOne({ select: { id: true }, where: { id } }))?.id;
+  }
+
   async findOneById(id: string) {
     return this.findOne({
       relations: {
@@ -42,6 +46,12 @@ export class UserRepository extends Repository<User> {
       },
       skip,
       take,
+    });
+  }
+
+  async deleteOneById(id: string) {
+    return this.datatSource.transaction(async (em) => {
+      await em.getRepository(User).softDelete(id);
     });
   }
 }

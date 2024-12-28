@@ -13,6 +13,7 @@ import { PartnerChannelsDTO } from '@/application/dto/response/partner-channels.
 import { PartnersDTO } from '@/application/dto/response/partners.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { NotFoundPartnerChannelException, NotFoundPartnerException } from '@/constant/exceptions';
+import { ObjectUtil } from '@/constant/util/object.util';
 
 @Injectable()
 export class PartnerService {
@@ -39,9 +40,7 @@ export class PartnerService {
       throw new NotFoundPartnerException(id);
     }
 
-    await this.partnerRepository.update(id, {
-      name: body.name && partner.name !== body.name ? body.name : undefined,
-    });
+    await this.partnerRepository.update(id, new ObjectUtil(partner, body).getValues());
   }
 
   async deletePartner(id: string) {
@@ -75,9 +74,7 @@ export class PartnerService {
       throw new NotFoundPartnerChannelException(id);
     }
 
-    await this.partnerChannelRepository.update(id, {
-      name: body.name && partnerChannel.name !== body.name ? body.name : undefined,
-    });
+    await this.partnerChannelRepository.update(id, new ObjectUtil(partnerChannel, body).getValues());
   }
 
   async deletePartnerChannel(id: string) {

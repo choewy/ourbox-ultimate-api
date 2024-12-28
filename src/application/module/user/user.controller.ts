@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
@@ -8,6 +8,8 @@ import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { GetUserssParamDTO } from '@/application/dto/request/get-users-param.dto';
+import { IdParamDTO } from '@/application/dto/request/id-param.dto';
+import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UsersDTO } from '@/application/dto/response/users.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
@@ -35,7 +37,21 @@ export class UserController {
     return this.userService.createUser(body);
   }
 
-  // TODO update
-  // TODO delete one
-  // TODO delete many
+  @Patch(':id(\\d+)')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequiredUserTypes(UserType.Admin)
+  @ApiOperation({ summary: '사용자 계정 수정' })
+  @ApiException(HttpStatus.NOT_FOUND)
+  async updateUser(@Param() param: IdParamDTO, @Body() body: UpdateUserDTO) {
+    return this.userService.updateUser(param.id, body);
+  }
+
+  @Delete(':id(\\d+)')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequiredUserTypes(UserType.Admin)
+  @ApiOperation({ summary: '사용자 계정 삭제' })
+  @ApiException(HttpStatus.NOT_FOUND)
+  async deleteUser(@Param() param: IdParamDTO) {
+    return this.userService.deleteUser(param.id);
+  }
 }

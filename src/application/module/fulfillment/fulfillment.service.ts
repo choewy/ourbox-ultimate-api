@@ -13,6 +13,7 @@ import { FulfillmentCentersDTO } from '@/application/dto/response/fulfillment-ce
 import { FulfillmentsDTO } from '@/application/dto/response/fulfillments.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { AlreadyExistFulfillmentCenterCodeException, NotFoundFulfillmentCenterException, NotFoundFulfillmentException } from '@/constant/exceptions';
+import { ObjectUtil } from '@/constant/util/object.util';
 
 @Injectable()
 export class FulfillmentService {
@@ -41,9 +42,7 @@ export class FulfillmentService {
       throw new NotFoundFulfillmentException(id);
     }
 
-    await this.fulfillmentRepository.update(id, {
-      name: body.name && fulfillment.name !== body.name ? body.name : undefined,
-    });
+    await this.fulfillmentRepository.update(id, new ObjectUtil(fulfillment, body).getValues());
   }
 
   async deleteFulfillment(id: string) {
@@ -86,10 +85,7 @@ export class FulfillmentService {
       throw new AlreadyExistFulfillmentCenterCodeException();
     }
 
-    await this.fulfillmentCenterRepository.update(id, {
-      code: body.code && fulfillmentCenter.code !== body.code ? body.code : undefined,
-      name: body.name && fulfillmentCenter.name !== body.name ? body.name : undefined,
-    });
+    await this.fulfillmentCenterRepository.update(id, new ObjectUtil(fulfillmentCenter, body).getValues());
   }
 
   async deleteFulfillmentCenter(id: string) {

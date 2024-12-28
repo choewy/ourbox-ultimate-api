@@ -7,7 +7,11 @@ export class PasswordColumnTransformer implements ValueTransformer {
     return new PasswordVO(null, value);
   }
 
-  to(vo: PasswordVO): string {
+  to(vo: PasswordVO | string): string {
+    if (typeof vo === 'string') {
+      vo = new PasswordVO(vo);
+    }
+
     return vo.valueOf();
   }
 }

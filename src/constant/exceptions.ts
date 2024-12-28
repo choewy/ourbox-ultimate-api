@@ -68,6 +68,12 @@ export class AlreadyExistFulfillmentCenterCodeException extends ServiceErrorExce
   }
 }
 
+export class NotFoundUserException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundUser, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
 export class NotFoundPartnerException extends ServiceErrorException {
   constructor(id?: string) {
     super(ServiceErrorCode.NotFoundPartner, HttpStatus.BAD_REQUEST, undefined, { id });
