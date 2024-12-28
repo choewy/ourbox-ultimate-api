@@ -1,9 +1,9 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { Fulfillment } from './fulfillment.entity';
 
 @Entity({ name: 'fulfillment_center', comment: '풀필먼트 센터' })
-@Unique('unique', ['fulfillmentId', 'code'])
+@Index('fulfillment_key_idx', ['fulfillmentId', 'code'])
 export class FulfillmentCenter {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '풀필먼트 센터 PK' })
   readonly id: string;
