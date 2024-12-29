@@ -37,7 +37,7 @@ export class PurchaserService {
       }
     }
 
-    await this.purchaserRepository.insert({
+    await this.purchaserRepository.insertOne(requestUser, {
       name: body.name,
       zipCode: body.zipCode,
       address: body.address,
@@ -67,7 +67,7 @@ export class PurchaserService {
       }
     }
 
-    await this.purchaserRepository.update(id, {
+    await this.purchaserRepository.updateOne(requestUser, purchaser, {
       name: body.name && body.name !== purchaser.name ? body.name : undefined,
       zipCode: body.zipCode && body.zipCode !== purchaser.zipCode ? body.zipCode : undefined,
       address: body.address && body.address !== purchaser.address ? body.address : undefined,
@@ -89,6 +89,6 @@ export class PurchaserService {
       throw new AccessDeninedException();
     }
 
-    await this.purchaserRepository.deleteOneById(id);
+    await this.purchaserRepository.deleteOne(requestUser, purchaser);
   }
 }

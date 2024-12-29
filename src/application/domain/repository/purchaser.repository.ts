@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
 
+import { SnapshotRepository } from './snapshot.repository';
 import { Purchaser } from '../entity/purchaser.entity';
+import { User } from '../entity/user.entity';
 
 @Injectable()
 export class PurchaserRepository extends Repository<Purchaser> {
@@ -27,10 +29,26 @@ export class PurchaserRepository extends Repository<Purchaser> {
       take,
     });
   }
+  async insertOne(executor: User, value: Partial<Purchaser>) {
+    const target = this.create(value);
 
-  async deleteOneById(id: string) {
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(Purchaser).softDelete(id);
+      await em.getRepository(Purchaser).insert(target);
+      await SnapshotRepository.ofEntityManager(em).forInsert(executor, target);
+    });
+  }
+
+  async updateOne(executor: User, target: Purchaser, value: Partial<Purchaser>) {
+    return this.datatSource.transaction(async (em) => {
+      await em.getRepository(Purchaser).update(target.id, value);
+      await SnapshotRepository.ofEntityManager(em).forUpdate(executor, target, value);
+    });
+  }
+
+  async deleteOne(executor: User, target: Purchaser) {
+    return this.datatSource.transaction(async (em) => {
+      await em.getRepository(Purchaser).softDelete(target.id);
+      await SnapshotRepository.ofEntityManager(em).forDelete(executor, target);
     });
   }
 }
