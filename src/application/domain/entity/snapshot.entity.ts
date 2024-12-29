@@ -2,6 +2,8 @@ import { Column, CreateDateColumn, Entity, Index, PrimaryColumn } from 'typeorm'
 
 import { SnapshotAction } from '../constant/enums';
 
+// TODO 각 entity Snapshot으로 분리
+// ex) UserSnapshot, PartnerSnapShot
 @Entity({ name: 'snapshot', comment: '스냅샷' })
 @Index('snapshot_target_id', ['id'])
 @Index('snapshot_target_name', ['name'])

@@ -5,6 +5,7 @@ import { SnapshotAction } from '../constant/enums';
 import { Snapshot } from '../entity/snapshot.entity';
 import { User } from '../entity/user.entity';
 
+// TODO 각 entity Snapshot으로 분리
 @Injectable()
 export class SnapshotRepository extends Repository<Snapshot> {
   constructor(
