@@ -31,27 +31,31 @@ export class FulfillmentService {
   }
 
   async createFulfillment(body: CreateFulfillmentDTO) {
-    await this.fulfillmentRepository.insert({
-      name: body.name,
-    });
+    const requestUser = this.requestContextService.getRequestUser<User>();
+
+    await this.fulfillmentRepository.insertOne(requestUser, { name: body.name });
   }
 
   async updateFulfillment(id: string, body: UpdateFulfillmentDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const fulfillment = await this.fulfillmentRepository.findOneById(id);
 
     if (!fulfillment) {
       throw new NotFoundFulfillmentException(id);
     }
 
-    await this.fulfillmentRepository.update(id, new ObjectUtil(fulfillment, body).getValues());
+    await this.fulfillmentRepository.updateOne(requestUser, fulfillment, new ObjectUtil(fulfillment, body).getValues());
   }
 
   async deleteFulfillment(id: string) {
-    if (!(await this.fulfillmentRepository.hasById(id))) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const fulfillment = await this.fulfillmentRepository.findOneById(id);
+
+    if (!fulfillment) {
       throw new NotFoundFulfillmentException(id);
     }
 
-    await this.fulfillmentRepository.deleteOneById(id);
+    await this.fulfillmentRepository.deleteOne(requestUser, fulfillment);
   }
 
   async getFulfillmentCenters(param: GetFulfillmentCentersParamDTO) {
@@ -63,7 +67,6 @@ export class FulfillmentService {
 
   async createFulfillmentCenter(body: CreateFulfillmentCenterDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
-
     const fulfillmentId = requestUser.getFulfillmentId(body.fulfillmentId);
 
     if (requestUser.type === UserType.Admin && fulfillmentId) {
@@ -76,7 +79,7 @@ export class FulfillmentService {
       throw new AlreadyExistFulfillmentCenterCodeException();
     }
 
-    await this.fulfillmentCenterRepository.insert({
+    await this.fulfillmentCenterRepository.insertOne(requestUser, {
       code: body.code,
       name: body.name,
       fulfillmentId,
@@ -84,6 +87,7 @@ export class FulfillmentService {
   }
 
   async updateFulfillmentCenter(id: string, body: UpdateFulfillmentCenterDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const fulfillmentCenter = await this.fulfillmentCenterRepository.findOneById(id);
 
     if (!fulfillmentCenter) {
@@ -94,14 +98,17 @@ export class FulfillmentService {
       throw new AlreadyExistFulfillmentCenterCodeException();
     }
 
-    await this.fulfillmentCenterRepository.update(id, new ObjectUtil(fulfillmentCenter, body).getValues());
+    await this.fulfillmentCenterRepository.updateOne(requestUser, fulfillmentCenter, new ObjectUtil(fulfillmentCenter, body).getValues());
   }
 
   async deleteFulfillmentCenter(id: string) {
-    if (!(await this.fulfillmentCenterRepository.hasById(id))) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const fulfillmentCenter = await this.fulfillmentCenterRepository.findOneById(id);
+
+    if (!fulfillmentCenter) {
       throw new NotFoundFulfillmentCenterException(id);
     }
 
-    await this.fulfillmentCenterRepository.deleteOneById(id);
+    await this.fulfillmentCenterRepository.deleteOne(requestUser, fulfillmentCenter);
   }
 }
