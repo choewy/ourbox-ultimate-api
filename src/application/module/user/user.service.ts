@@ -5,6 +5,7 @@ import { FulfillmentCenter } from '@/application/domain/entity/fulfillment-cente
 import { Fulfillment } from '@/application/domain/entity/fulfillment.entity';
 import { PartnerChannel } from '@/application/domain/entity/partner-channel.entity';
 import { Partner } from '@/application/domain/entity/partner.entity';
+import { User } from '@/application/domain/entity/user.entity';
 import { FulfillmentCenterRepository } from '@/application/domain/repository/fulfillment-center.repository';
 import { FulfillmentRepository } from '@/application/domain/repository/fulfillment.repository';
 import { PartnerChannelRepository } from '@/application/domain/repository/partner-channel.repository';
@@ -14,6 +15,7 @@ import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { GetUserssParamDTO } from '@/application/dto/request/get-users-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UsersDTO } from '@/application/dto/response/users.dto';
+import { RequestContextService } from '@/common/request-context/request-context.service';
 import {
   AlreadyExistEmailException,
   NotFoundFulfillmentCenterException,
@@ -24,10 +26,12 @@ import {
   ValidationFailedException,
 } from '@/constant/exceptions';
 import { ObjectUtil } from '@/constant/util/object.util';
+import { PasswordVO } from '@/constant/vo/password.vo';
 
 @Injectable()
 export class UserService {
   constructor(
+    private readonly requestContextService: RequestContextService,
     private readonly userRepository: UserRepository,
     private readonly partnerRepository: PartnerRepository,
     private readonly partnerChannelRepository: PartnerChannelRepository,
@@ -42,6 +46,8 @@ export class UserService {
   }
 
   async createUser(body: CreateUserDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+
     if (await this.userRepository.hasEmail(body.email)) {
       throw new AlreadyExistEmailException();
     }
@@ -147,10 +153,10 @@ export class UserService {
         break;
     }
 
-    await this.userRepository.insert({
+    await this.userRepository.insertOne(requestUser, {
       type: body.type,
       email: body.email,
-      password: body.password,
+      password: new PasswordVO(body.password),
       name: body.name,
       partner,
       partnerChannel,
@@ -160,6 +166,7 @@ export class UserService {
   }
 
   async updateUser(id: string, body: UpdateUserDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const user = await this.userRepository.findOneById(id);
 
     if (!user) {
@@ -182,14 +189,17 @@ export class UserService {
       throw new NotFoundFulfillmentCenterException(body.fulfillmentCenterId);
     }
 
-    await this.userRepository.update(id, new ObjectUtil(user, body).getValues());
+    await this.userRepository.updateOne(requestUser, user, new ObjectUtil(user, body).getValues());
   }
 
   async deleteUser(id: string) {
-    if (!(await this.userRepository.hasById(id))) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const user = await this.userRepository.findOneById(id);
+
+    if (!user) {
       throw new NotFoundUserException(id);
     }
 
-    await this.userRepository.deleteOneById(id);
+    await this.userRepository.deleteOne(requestUser, user);
   }
 }
