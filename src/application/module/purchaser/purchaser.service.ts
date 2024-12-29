@@ -3,10 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
+import { PurchaserHistoryRepository } from '@/application/domain/repository/purchaser-history.repository';
 import { PurchaserRepository } from '@/application/domain/repository/purchaser.repository';
 import { CreatePurchaserDTO } from '@/application/dto/request/create-purchaser.dto';
 import { GetPurchasersParamDTO } from '@/application/dto/request/get-purchasers-param.dto';
 import { UpdatePurchaserDTO } from '@/application/dto/request/update-purchaser.dto';
+import { PurchaserHistoriesDTO } from '@/application/dto/response/purchaser-histories.dto';
 import { PurchasersDTO } from '@/application/dto/response/purchasers.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { AccessDeninedException, NotFoundPartnerException, NotFoundPurchaserException } from '@/constant/exceptions';
@@ -17,6 +19,7 @@ export class PurchaserService {
     private readonly requestContextService: RequestContextService,
     private readonly partnerRepository: PartnerRepository,
     private readonly purchaserRepository: PurchaserRepository,
+    private readonly purchaserHistoryRepository: PurchaserHistoryRepository,
   ) {}
 
   async getPurchasers(param: GetPurchasersParamDTO) {
@@ -24,6 +27,10 @@ export class PurchaserService {
     const rowsAndCount = await this.purchaserRepository.findManyAndCount(requestUser.getPartnerId(param.partnerId), param.skip, param.take);
 
     return new PurchasersDTO(param, rowsAndCount);
+  }
+
+  async getPurchaserHistories(id: string) {
+    return new PurchaserHistoriesDTO(id, await this.purchaserHistoryRepository.findMany(id));
   }
 
   async createPurchaser(body: CreatePurchaserDTO) {

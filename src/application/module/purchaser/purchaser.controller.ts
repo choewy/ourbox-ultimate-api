@@ -10,6 +10,7 @@ import { CreatePurchaserDTO } from '@/application/dto/request/create-purchaser.d
 import { GetPurchasersParamDTO } from '@/application/dto/request/get-purchasers-param.dto';
 import { IdParamDTO } from '@/application/dto/request/id-param.dto';
 import { UpdatePurchaserDTO } from '@/application/dto/request/update-purchaser.dto';
+import { PurchaserHistoriesDTO } from '@/application/dto/response/purchaser-histories.dto';
 import { PurchasersDTO } from '@/application/dto/response/purchasers.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
@@ -26,6 +27,14 @@ export class PurchaserController {
   @ApiException()
   async getPurchasers(@Query() queryParam: GetPurchasersParamDTO) {
     return this.purchaserService.getPurchasers(queryParam);
+  }
+
+  @Get(':id(\\d+)/histories')
+  @ApiOperation({ summary: '매입처 수정이력 목록 조회' })
+  @ApiOkResponse({ type: PurchaserHistoriesDTO })
+  @ApiException()
+  async getPurchaserHistories(@Param() param: IdParamDTO) {
+    return this.purchaserService.getPurchaserHistories(param.id);
   }
 
   @Post()

@@ -16,10 +16,7 @@ export class ConsignerRepository extends Repository<Consigner> {
   }
 
   async findOneById(id: string) {
-    return this.findOne({
-      relations: { partner: true },
-      where: { id },
-    });
+    return this.findOne({ where: { id } });
   }
 
   async findManyAndCount(partnerId = null, skip: number, take: number) {

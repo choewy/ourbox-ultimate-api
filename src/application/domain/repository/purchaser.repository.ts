@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
+import { DataSource, EntityManager, Equal, Repository } from 'typeorm';
 
 import { HistoryAction } from '../constant/enums';
 import { PurchaserHistory } from '../entity/purchaser-history.entity';
@@ -16,16 +16,13 @@ export class PurchaserRepository extends Repository<Purchaser> {
   }
 
   async findOneById(id: string) {
-    return this.findOne({
-      relations: { partner: true },
-      where: { id },
-    });
+    return this.findOne({ where: { id } });
   }
 
   async findManyAndCount(partnerId = null, skip: number, take: number) {
     return this.findAndCount({
       relations: { partner: true },
-      where: { partnerId: Or(IsNull(), Equal(partnerId)) },
+      where: { partnerId: partnerId ? Equal(partnerId) : undefined },
       skip,
       take,
     });

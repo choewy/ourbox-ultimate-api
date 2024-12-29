@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
+import { DataSource, EntityManager, Equal, Repository } from 'typeorm';
 
 import { HistoryAction } from '../constant/enums';
 import { PartnerChannelHistory } from '../entity/partner-channel-history.entity';
@@ -22,7 +22,7 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
   async findManyAndCount(skip: number, take: number, partnerId = null) {
     return this.findAndCount({
       relations: { partner: true },
-      where: { partnerId: Or(IsNull(), Equal(partnerId)) },
+      where: { partnerId: partnerId ? Equal(partnerId) : undefined },
       skip,
       take,
     });

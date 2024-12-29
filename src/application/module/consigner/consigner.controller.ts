@@ -10,6 +10,7 @@ import { CreateConsignerDTO } from '@/application/dto/request/create-consigner.d
 import { GetConsignersParamDTO } from '@/application/dto/request/get-consigners-param.dto';
 import { IdParamDTO } from '@/application/dto/request/id-param.dto';
 import { UpdateConsignerDTO } from '@/application/dto/request/update-consigner.dto';
+import { ConsignerHistoriesDTO } from '@/application/dto/response/consigner-histories.dto';
 import { ConsignersDTO } from '@/application/dto/response/consigners.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
@@ -26,6 +27,14 @@ export class ConsignerController {
   @ApiException()
   async getConsginers(@Query() queryParam: GetConsignersParamDTO) {
     return this.consignerService.getConsigners(queryParam);
+  }
+
+  @Get(':id(\\d+)/histories')
+  @ApiOperation({ summary: '발송인 수정이력 목록 조회' })
+  @ApiOkResponse({ type: ConsignerHistoriesDTO })
+  @ApiException()
+  async getConsignerHistories(@Param() param: IdParamDTO) {
+    return this.consignerService.getConsignerHistories(param.id);
   }
 
   @Post()

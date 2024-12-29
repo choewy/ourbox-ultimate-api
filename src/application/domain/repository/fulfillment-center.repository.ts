@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
+import { DataSource, EntityManager, Equal, Repository } from 'typeorm';
 
 import { HistoryAction } from '../constant/enums';
 import { FulfillmentCenterHistory } from '../entity/fulfillment-center-history.entity';
@@ -33,7 +33,7 @@ export class FulfillmentCenterRepository extends Repository<FulfillmentCenter> {
   async findManyAndCount(skip: number, take: number, fulfillmentId = null) {
     return this.findAndCount({
       relations: { fulfillment: true },
-      where: { fulfillmentId: Or(IsNull(), Equal(fulfillmentId)) },
+      where: { fulfillmentId: fulfillmentId ? Equal(fulfillmentId) : undefined },
       skip,
       take,
     });

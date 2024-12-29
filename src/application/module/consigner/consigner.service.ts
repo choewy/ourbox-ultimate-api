@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
+import { ConsignerHistoryRepository } from '@/application/domain/repository/consigner-history.repository';
 import { ConsignerRepository } from '@/application/domain/repository/consigner.repository';
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { CreateConsignerDTO } from '@/application/dto/request/create-consigner.dto';
 import { GetConsignersParamDTO } from '@/application/dto/request/get-consigners-param.dto';
 import { UpdateConsignerDTO } from '@/application/dto/request/update-consigner.dto';
+import { ConsignerHistoriesDTO } from '@/application/dto/response/consigner-histories.dto';
 import { ConsignersDTO } from '@/application/dto/response/consigners.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { AccessDeninedException, NotFoundConsignerException, NotFoundPartnerException } from '@/constant/exceptions';
@@ -17,6 +19,7 @@ export class ConsignerService {
     private readonly requestContextService: RequestContextService,
     private readonly partnerRepository: PartnerRepository,
     private readonly consignerRepository: ConsignerRepository,
+    private readonly consignerHistoryRepository: ConsignerHistoryRepository,
   ) {}
 
   async getConsigners(getConsignersParamDTO: GetConsignersParamDTO) {
@@ -28,6 +31,10 @@ export class ConsignerService {
     );
 
     return new ConsignersDTO(getConsignersParamDTO, rowsAndCount);
+  }
+
+  async getConsignerHistories(id: string) {
+    return new ConsignerHistoriesDTO(id, await this.consignerHistoryRepository.findMany(id));
   }
 
   async createConsigner(body: CreateConsignerDTO) {
