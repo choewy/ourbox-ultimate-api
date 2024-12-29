@@ -1,5 +1,6 @@
 export enum RequestHeader {
   RequestId = 'x-request-id',
+  ForwarededFor = 'x-forwarded-for',
   Authorization = 'authorization',
   RefreshToken = 'x-refresh-token',
 }

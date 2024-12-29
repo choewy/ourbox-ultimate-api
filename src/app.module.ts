@@ -7,6 +7,7 @@ import { ApplicationModule } from './application/application.module';
 import { ConfigFactoryModule } from './common/config/config.module';
 import { ApplicationConfigFactory } from './common/config/factory/application-config.factory';
 import { ExceptionFilter } from './common/provider/exception.filter';
+import { LoggingInterceptor } from './common/provider/logging.interceptor';
 import { SerializeInterceptor } from './common/provider/serialize.interceptor';
 import { ValidationPipe } from './common/provider/validation.pipe';
 import { RequestContextModule } from './common/request-context/request-context.module';
@@ -24,6 +25,6 @@ import { RequestContextModule } from './common/request-context/request-context.m
     ApplicationModule,
   ],
   controllers: [AppController],
-  providers: [SerializeInterceptor, ValidationPipe, ExceptionFilter, AppService],
+  providers: [SerializeInterceptor, LoggingInterceptor, ValidationPipe, ExceptionFilter, AppService],
 })
 export class AppModule {}

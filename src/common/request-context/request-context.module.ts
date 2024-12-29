@@ -16,6 +16,7 @@ import { RequestContextService } from './request-context.service';
           req.id = req.get(RequestContextPropertyKey.RequestId) ?? v4();
           res.set(RequestContextPropertyKey.RequestId, req.id);
           clsService.set(RequestContextPropertyKey.RequestId, req.id);
+          clsService.set(RequestContextPropertyKey.RequestTimestamp, Date.now());
         },
       },
     }),
