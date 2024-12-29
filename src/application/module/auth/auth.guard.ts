@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { AuthService } from './auth.service';
-import { REQUIRED_AUTH } from '../../decorator/required-auth';
 
+import { REQUIRED_AUTH } from '@/application/decorator/required-auth';
 import { UserStatus } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';

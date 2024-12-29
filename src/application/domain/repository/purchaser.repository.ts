@@ -27,4 +27,10 @@ export class PurchaserRepository extends Repository<Purchaser> {
       take,
     });
   }
+
+  async deleteOneById(id: string) {
+    return this.datatSource.transaction(async (em) => {
+      await em.getRepository(Purchaser).softDelete(id);
+    });
+  }
 }

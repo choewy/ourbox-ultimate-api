@@ -26,4 +26,6 @@ export enum ServiceErrorCode {
   AlreadyExistFulfillmentCenterCode = '400',
   NotFoundFulfillment = '401',
   NotFoundFulfillmentCenter = '402',
+  NotFoundPurchaser = '500',
+  NotFoundConsigner = '600',
 }

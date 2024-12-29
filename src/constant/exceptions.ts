@@ -97,3 +97,15 @@ export class NotFoundFulfillmentCenterException extends ServiceErrorException {
     super(ServiceErrorCode.NotFoundFulfillmentCenter, HttpStatus.BAD_REQUEST, undefined, { id });
   }
 }
+
+export class NotFoundPurchaserException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundPurchaser, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundConsignerException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundConsigner, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
