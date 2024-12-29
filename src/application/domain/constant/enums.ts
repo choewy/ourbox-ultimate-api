@@ -21,3 +21,9 @@ export enum ProductUnit {
   Case = 'cs',
   Package = 'pkg',
 }
+
+export enum SnapshotAction {
+  Insert = 'insert',
+  Update = 'update',
+  Delete = 'delete',
+}

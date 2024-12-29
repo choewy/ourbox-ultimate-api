@@ -31,25 +31,31 @@ export class PartnerService {
   }
 
   async createPartner(body: CreatePartnerDTO) {
-    await this.partnerRepository.insert({ name: body.name });
+    const requestUser = this.requestContextService.getRequestUser<User>();
+
+    await this.partnerRepository.insertOne(requestUser, { name: body.name });
   }
 
   async updatePartner(id: string, body: UpdatePartnerDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const partner = await this.partnerRepository.findOneById(id);
 
     if (!partner) {
       throw new NotFoundPartnerException(id);
     }
 
-    await this.partnerRepository.update(id, new ObjectUtil(partner, body).getValues());
+    await this.partnerRepository.updateOne(requestUser, partner, new ObjectUtil(partner, body).getValues());
   }
 
   async deletePartner(id: string) {
-    if (!(await this.partnerRepository.hasById(id))) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const partner = await this.partnerRepository.findOneById(id);
+
+    if (!partner) {
       throw new NotFoundPartnerException(id);
     }
 
-    await this.partnerRepository.deleteOneById(id);
+    await this.partnerRepository.deleteOne(requestUser, partner);
   }
 
   async getPartnerChannels(param: GetPartnerChannelsParamDTO) {
@@ -72,27 +78,31 @@ export class PartnerService {
       partnerId = body.partnerId;
     }
 
-    await this.partnerChannelRepository.insert({
+    await this.partnerChannelRepository.insertOne(requestUser, {
       name: body.name,
       partnerId,
     });
   }
 
   async updatePartnerChannel(id: string, body: UpdatePartnerChannelDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const partnerChannel = await this.partnerChannelRepository.findOneById(id);
 
     if (!partnerChannel) {
       throw new NotFoundPartnerChannelException(id);
     }
 
-    await this.partnerChannelRepository.update(id, new ObjectUtil(partnerChannel, body).getValues());
+    await this.partnerChannelRepository.updateOne(requestUser, partnerChannel, new ObjectUtil(partnerChannel, body).getValues());
   }
 
   async deletePartnerChannel(id: string) {
-    if (!(await this.partnerChannelRepository.hasById(id))) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const partnerChannel = await this.partnerChannelRepository.findOneById(id);
+
+    if (!partnerChannel) {
       throw new NotFoundPartnerChannelException(id);
     }
 
-    await this.partnerChannelRepository.deleteOneById(id);
+    await this.partnerChannelRepository.deleteOne(requestUser, partnerChannel);
   }
 }

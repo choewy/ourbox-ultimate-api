@@ -64,10 +64,15 @@ export class AuthGuard implements CanActivate {
         throw new InActivatedAccountException();
       }
 
+      delete originUser.password;
+
       this.requestContextService.setOriginUser(originUser);
     }
 
     this.requestContextService.setJwtPayload(accessTokenPayload);
+
+    delete requestUser.password;
+
     this.requestContextService.setRequestUser(requestUser);
 
     if (accessTokenResult.isExpired) {

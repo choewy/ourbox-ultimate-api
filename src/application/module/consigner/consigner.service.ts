@@ -41,7 +41,7 @@ export class ConsignerService {
       }
     }
 
-    await this.consignerRepository.insert({
+    await this.consignerRepository.insertOne(requestUser, {
       name: body.name,
       zipCode: body.zipCode,
       address: body.address,
@@ -71,7 +71,7 @@ export class ConsignerService {
       }
     }
 
-    await this.consignerRepository.update(id, {
+    await this.consignerRepository.updateOne(requestUser, consigner, {
       name: body.name && body.name !== consigner.name ? body.name : undefined,
       zipCode: body.zipCode && body.zipCode !== consigner.zipCode ? body.zipCode : undefined,
       address: body.address && body.address !== consigner.address ? body.address : undefined,
@@ -93,6 +93,6 @@ export class ConsignerService {
       throw new AccessDeninedException();
     }
 
-    await this.consignerRepository.deleteOneById(id);
+    await this.consignerRepository.deleteOne(requestUser, consigner);
   }
 }
