@@ -6,6 +6,7 @@ import { IsZipCode } from '@/constant/validator/is-zip-code';
 
 export class CreatePurchaserDTO {
   @ApiProperty({ type: String })
+  @IsString()
   @IsNotEmpty()
   name: string;
 

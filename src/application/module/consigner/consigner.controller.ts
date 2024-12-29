@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ConsignerService } from './consigner.service';
 
@@ -8,6 +8,8 @@ import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreateConsignerDTO } from '@/application/dto/request/create-consigner.dto';
 import { GetConsignersParamDTO } from '@/application/dto/request/get-consigners-param.dto';
+import { IdParamDTO } from '@/application/dto/request/id-param.dto';
+import { UpdateConsignerDTO } from '@/application/dto/request/update-consigner.dto';
 import { ConsignersDTO } from '@/application/dto/response/consigners.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
@@ -30,12 +32,28 @@ export class ConsignerController {
   @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.PartnerUser)
   @ApiOperation({ summary: '발송인 등록' })
   @ApiCreatedResponse()
-  @ApiException()
+  @ApiException(HttpStatus.NOT_FOUND)
   async createConsigner(@Body() body: CreateConsignerDTO) {
     return this.consignerService.createConsigner(body);
   }
 
-  // TODO update
-  // TODO delete one
-  // TODO delete many
+  @Patch(':id(\\d+)')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.PartnerUser)
+  @ApiOperation({ summary: '발송인 수정' })
+  @ApiNoContentResponse()
+  @ApiException(HttpStatus.NOT_FOUND)
+  async updateConsigner(@Param() param: IdParamDTO, @Body() body: UpdateConsignerDTO) {
+    return this.consignerService.updateConsigner(param.id, body);
+  }
+
+  @Delete(':id(\\d+)')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.PartnerUser)
+  @ApiOperation({ summary: '발송인 삭제' })
+  @ApiNoContentResponse()
+  @ApiException(HttpStatus.NOT_FOUND)
+  async deleteConsigner(@Param() param: IdParamDTO) {
+    return this.consignerService.deleteConsigner(param.id);
+  }
 }

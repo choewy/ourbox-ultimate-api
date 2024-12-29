@@ -4,9 +4,10 @@ import { ConsignerController } from './consigner.controller';
 import { ConsignerService } from './consigner.service';
 
 import { ConsignerRepository } from '@/application/domain/repository/consigner.repository';
+import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 
 @Module({
   controllers: [ConsignerController],
-  providers: [ConsignerRepository, ConsignerService],
+  providers: [PartnerRepository, ConsignerRepository, ConsignerService],
 })
 export class ConsignerModule {}

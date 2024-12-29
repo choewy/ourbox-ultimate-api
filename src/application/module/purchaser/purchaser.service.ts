@@ -28,10 +28,13 @@ export class PurchaserService {
 
   async createPurchaser(body: CreatePurchaserDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
-    const partnerId = requestUser.getPartnerId(body.partnerId);
 
-    if (partnerId && !(await this.partnerRepository.hasById(partnerId))) {
-      throw new NotFoundPartnerException(partnerId);
+    const partnerId: string = requestUser.getPartnerId(body.partnerId);
+
+    if (requestUser.type === UserType.Admin && partnerId) {
+      if (!(await this.partnerRepository.hasById(partnerId))) {
+        throw new NotFoundPartnerException(partnerId);
+      }
     }
 
     await this.purchaserRepository.insert({
@@ -56,14 +59,12 @@ export class PurchaserService {
       throw new AccessDeninedException();
     }
 
-    let partnerId: string = undefined;
+    const partnerId: string = requestUser.getPartnerId(body.partnerId);
 
-    if (requestUser.type === UserType.Admin && body.partnerId) {
-      if (!(await this.partnerRepository.hasById(body.partnerId))) {
-        throw new NotFoundPartnerException(body.partnerId);
+    if (requestUser.type === UserType.Admin && partnerId) {
+      if (!(await this.partnerRepository.hasById(partnerId))) {
+        throw new NotFoundPartnerException(partnerId);
       }
-
-      partnerId = body.partnerId;
     }
 
     await this.purchaserRepository.update(id, {

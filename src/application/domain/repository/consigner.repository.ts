@@ -27,4 +27,10 @@ export class ConsignerRepository extends Repository<Consigner> {
       take,
     });
   }
+
+  async deleteOneById(id: string) {
+    return this.datatSource.transaction(async (em) => {
+      await em.getRepository(Consigner).softDelete(id);
+    });
+  }
 }

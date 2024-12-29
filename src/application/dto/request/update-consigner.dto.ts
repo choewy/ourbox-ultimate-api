@@ -4,7 +4,7 @@ import { IsNumberString, IsOptional, IsString } from 'class-validator';
 import { IsContactFormat } from '@/constant/validator/is-contact-fotmat';
 import { IsZipCode } from '@/constant/validator/is-zip-code';
 
-export class UpdatePurchaserDTO {
+export class UpdateConsignerDTO {
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()

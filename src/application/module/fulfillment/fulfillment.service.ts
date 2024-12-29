@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { FulfillmentCenterRepository } from '@/application/domain/repository/fulfillment-center.repository';
 import { FulfillmentRepository } from '@/application/domain/repository/fulfillment.repository';
@@ -63,14 +64,22 @@ export class FulfillmentService {
   async createFulfillmentCenter(body: CreateFulfillmentCenterDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
+    const fulfillmentId = requestUser.getFulfillmentId(body.fulfillmentId);
+
+    if (requestUser.type === UserType.Admin && fulfillmentId) {
+      if (!(await this.fulfillmentRepository.hasById(fulfillmentId))) {
+        throw new NotFoundFulfillmentException(fulfillmentId);
+      }
+    }
+
     if (await this.fulfillmentCenterRepository.hasKey(requestUser.fulfillmentId, body.code)) {
       throw new AlreadyExistFulfillmentCenterCodeException();
     }
 
     await this.fulfillmentCenterRepository.insert({
-      fulfillmentId: requestUser.getFulfillmentId(body.fulfillmentId),
       code: body.code,
       name: body.name,
+      fulfillmentId,
     });
   }
 

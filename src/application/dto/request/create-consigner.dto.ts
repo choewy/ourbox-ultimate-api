@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 import { IsContactFormat } from '@/constant/validator/is-contact-fotmat';
 import { IsZipCode } from '@/constant/validator/is-zip-code';
 
 export class CreateConsignerDTO {
   @ApiProperty({ type: String })
+  @IsString()
   @IsNotEmpty()
   name: string;
 
@@ -15,10 +16,12 @@ export class CreateConsignerDTO {
   zipCode: string;
 
   @ApiProperty({ type: String })
+  @IsString()
   @IsNotEmpty()
   address: string;
 
   @ApiProperty({ type: String })
+  @IsString()
   @IsNotEmpty()
   detailAddress: string;
 
