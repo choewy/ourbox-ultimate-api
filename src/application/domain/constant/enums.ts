@@ -22,7 +22,7 @@ export enum ProductUnit {
   Package = 'pkg',
 }
 
-export enum SnapshotAction {
+export enum HistoryAction {
   Insert = 'insert',
   Update = 'update',
   Delete = 'delete',

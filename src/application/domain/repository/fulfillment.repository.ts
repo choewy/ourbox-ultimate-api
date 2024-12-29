@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
-import { SnapshotRepository } from './snapshot.repository';
+import { HistoryAction } from '../constant/enums';
 import { FulfillmentCenter } from '../entity/fulfillment-center.entity';
+import { FulfillmentHistory } from '../entity/fulfillment-history.entity';
 import { Fulfillment } from '../entity/fulfillment.entity';
 import { User } from '../entity/user.entity';
 
@@ -35,14 +36,14 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
 
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(Fulfillment).insert(target);
-      await SnapshotRepository.ofEntityManager(em).forInsert(executor, target);
+      await em.getRepository(FulfillmentHistory).insert(new FulfillmentHistory(HistoryAction.Insert, executor, target));
     });
   }
 
   async updateOne(executor: User, target: Fulfillment, value: Partial<Fulfillment>) {
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(Fulfillment).update(target.id, value);
-      await SnapshotRepository.ofEntityManager(em).forUpdate(executor, target, value);
+      await em.getRepository(FulfillmentHistory).insert(new FulfillmentHistory(HistoryAction.Update, executor, target, value));
     });
   }
 
@@ -51,7 +52,7 @@ export class FulfillmentRepository extends Repository<Fulfillment> {
       await em.getRepository(User).update({ fulfillmentId: target.id }, { fulfillment: null, fulfillmentCenter: null });
       await em.getRepository(FulfillmentCenter).softDelete({ fulfillmentId: target.id });
       await em.getRepository(Fulfillment).softDelete(target.id);
-      await SnapshotRepository.ofEntityManager(em).forDelete(executor, target);
+      await em.getRepository(FulfillmentHistory).insert(new FulfillmentHistory(HistoryAction.Delete, executor, target));
     });
   }
 }

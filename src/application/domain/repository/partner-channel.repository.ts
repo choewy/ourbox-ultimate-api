@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Equal, IsNull, Or, Repository } from 'typeorm';
 
-import { SnapshotRepository } from './snapshot.repository';
+import { HistoryAction } from '../constant/enums';
+import { PartnerChannelHistory } from '../entity/partner-channel-history.entity';
 import { PartnerChannel } from '../entity/partner-channel.entity';
 import { User } from '../entity/user.entity';
 
@@ -36,14 +37,14 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
 
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(PartnerChannel).insert(value);
-      await SnapshotRepository.ofEntityManager(em).forInsert(executor, target);
+      await em.getRepository(PartnerChannelHistory).insert(new PartnerChannelHistory(HistoryAction.Insert, executor, target));
     });
   }
 
   async updateOne(executor: User, target: PartnerChannel, value: Partial<PartnerChannel>) {
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(PartnerChannel).update(target.id, value);
-      await SnapshotRepository.ofEntityManager(em).forUpdate(executor, target);
+      await em.getRepository(PartnerChannelHistory).insert(new PartnerChannelHistory(HistoryAction.Update, executor, target, value));
     });
   }
 
@@ -51,7 +52,7 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(User).update({ partnerChannelId: target.id }, { partnerChannel: null });
       await em.getRepository(PartnerChannel).softDelete(target.id);
-      await SnapshotRepository.ofEntityManager(em).forDelete(executor, target);
+      await em.getRepository(PartnerChannelHistory).insert(new PartnerChannelHistory(HistoryAction.Delete, executor, target));
     });
   }
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Equal, Repository } from 'typeorm';
 
-import { SnapshotRepository } from './snapshot.repository';
+import { HistoryAction } from '../constant/enums';
+import { ConsignerHistory } from '../entity/consigner-history.entity';
 import { Consigner } from '../entity/consigner.entity';
 import { User } from '../entity/user.entity';
 
@@ -35,21 +36,21 @@ export class ConsignerRepository extends Repository<Consigner> {
 
     return this.datatSource.transaction(async (em) => {
       await em.getRepository(Consigner).insert(target);
-      await SnapshotRepository.ofEntityManager(em).forInsert(executor, target);
+      await em.getRepository(ConsignerHistory).insert(new ConsignerHistory(HistoryAction.Insert, executor, target));
     });
   }
 
   async updateOne(executor: User, target: Consigner, value: Partial<Consigner>) {
     return this.datatSource.transaction(async (em) => {
-      await SnapshotRepository.ofEntityManager(em).forUpdate(executor, target, value);
       await em.getRepository(Consigner).update(target.id, value);
+      await em.getRepository(ConsignerHistory).insert(new ConsignerHistory(HistoryAction.Update, executor, target, value));
     });
   }
 
   async deleteOne(executor: User, target: Consigner) {
     return this.datatSource.transaction(async (em) => {
-      await SnapshotRepository.ofEntityManager(em).forDelete(executor, target);
       await em.getRepository(Consigner).softDelete(target.id);
+      await em.getRepository(ConsignerHistory).insert(new ConsignerHistory(HistoryAction.Delete, executor, target));
     });
   }
 }

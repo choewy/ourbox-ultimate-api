@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
 import { AuthGuard } from './application/module/auth/auth.guard';
+import { AuthService } from './application/module/auth/auth.service';
 import { UserTypeGuard } from './application/module/user/user.guard';
 import { ApplicationConfigFactory } from './common/config/factory/application-config.factory';
 import { ExceptionFilter } from './common/provider/exception.filter';
@@ -15,7 +16,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const applicationConfigFactory = app.get(ApplicationConfigFactory);
 
-  new Swagger(app).createDocument().createCustomOptions({ accessToken: null, refreshToken: null }).setup();
+  const authService = app.get(AuthService);
+  const user = await authService.getUser('1');
+
+  new Swagger(app)
+    .createDocument()
+    .createCustomOptions(user ? authService.issueTokens(user) : {})
+    .setup();
 
   app.enableShutdownHooks();
   app.enableCors(applicationConfigFactory.corsOptions);
