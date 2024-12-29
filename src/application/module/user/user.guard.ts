@@ -21,36 +21,36 @@ export class UserTypeGuard implements CanActivate {
       return true;
     }
 
-    const requestUser = this.requestContextService.getRequestUser<User>();
+    const user = this.requestContextService.getRequestUser<User>();
 
-    if (!requestUser) {
+    if (!user) {
       throw new LoginRequiredException();
     }
 
-    if (!requiredUserTypes.includes(requestUser.type)) {
+    if (!requiredUserTypes.includes(user.type)) {
       throw new AccessDeninedException();
     }
 
     let isThrowForbiddenException = false;
 
-    switch (requestUser.type) {
+    switch (user.type) {
       case UserType.PartnerAdmin:
-        isThrowForbiddenException = !requestUser.partnerId;
+        isThrowForbiddenException = !user.partnerId;
 
         break;
 
       case UserType.PartnerUser:
-        isThrowForbiddenException = !requestUser.partnerChannelId;
+        isThrowForbiddenException = !user.partnerChannelId;
 
         break;
 
       case UserType.FulfillmentAdmin:
-        isThrowForbiddenException = !requestUser.fulfillmentId;
+        isThrowForbiddenException = !user.fulfillmentId;
 
         break;
 
       case UserType.FulfillmentUser:
-        isThrowForbiddenException = !requestUser.fulfillmentCenterId;
+        isThrowForbiddenException = !user.fulfillmentCenterId;
 
         break;
     }

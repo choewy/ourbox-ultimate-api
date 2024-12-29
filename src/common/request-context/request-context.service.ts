@@ -40,11 +40,27 @@ export class RequestContextService {
     return this.clsService.get(RequestContextPropertyKey.RequestUser) ?? null;
   }
 
+  getOriginUser<User = any>(): User {
+    return this.clsService.get(RequestContextPropertyKey.OriginUser) ?? null;
+  }
+
+  getJwtPayload<JwtSignPayload = any>(): JwtSignPayload {
+    return this.clsService.get(RequestContextPropertyKey.JwtPaylaod) ?? null;
+  }
+
   setExecutionContext(executionContext: ExecutionContext) {
     this.clsService.set(RequestContextPropertyKey.ExecutionContext, executionContext);
   }
 
   setRequestUser<User = any>(user: User) {
     this.clsService.set(RequestContextPropertyKey.RequestUser, user);
+  }
+
+  setOriginUser<User = any>(user: User) {
+    this.clsService.set(RequestContextPropertyKey.OriginUser, user);
+  }
+
+  setJwtPayload<JwtSignPayload = any>(payload: JwtSignPayload) {
+    this.clsService.set(RequestContextPropertyKey.JwtPaylaod, payload);
   }
 }

@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { REQUIRED_AUTH } from '../../decorator/required-auth';
 
 import { UserStatus } from '@/application/domain/constant/enums';
+import { User } from '@/application/domain/entity/user.entity';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import { RequestHeader, ResponseHeader } from '@/constant/enums';
 import { InActivatedAccountException, InvalidTokenException, LoginRequiredException } from '@/constant/exceptions';
@@ -35,34 +36,54 @@ export class AuthGuard implements CanActivate {
 
     const accessTokenResult = this.authService.verifyAccessToken(accessToken);
 
-    if (!accessTokenResult.ok || !accessTokenResult.id || (accessTokenResult.error && !accessTokenResult.isExpired)) {
+    if (!accessTokenResult.ok || !accessTokenResult.payload || (accessTokenResult.error && !accessTokenResult.isExpired)) {
       throw new InvalidTokenException();
     }
 
-    const user = await this.authService.getUser(accessTokenResult.id);
+    const accessTokenPayload = accessTokenResult.payload;
+    const requestUser = await this.authService.getUser(accessTokenPayload.id);
 
-    if (!user) {
+    if (!requestUser) {
       throw new InvalidTokenException();
     }
 
-    if (user.status !== UserStatus.Activated) {
+    if (requestUser.status !== UserStatus.Activated) {
       throw new InActivatedAccountException();
     }
 
-    this.requestContextService.setRequestUser(user);
+    let originUser: User = null;
+
+    if (accessTokenPayload.originId) {
+      originUser = await this.authService.getUser(accessTokenPayload.originId);
+
+      if (!originUser) {
+        throw new InvalidTokenException();
+      }
+
+      if (originUser.status !== UserStatus.Activated) {
+        throw new InActivatedAccountException();
+      }
+
+      this.requestContextService.setOriginUser(originUser);
+    }
+
+    this.requestContextService.setJwtPayload(accessTokenPayload);
+    this.requestContextService.setRequestUser(requestUser);
 
     if (accessTokenResult.isExpired) {
       const refreshToken = String(headers[RequestHeader.RefreshToken]);
       const refreshTokenResult = this.authService.verifyRefreshToken(refreshToken);
+      const refreshTokenPayload = refreshTokenResult.payload;
 
-      if (!refreshTokenResult.ok || refreshTokenResult.error || refreshTokenResult.id !== accessTokenResult.id) {
+      if (!refreshTokenResult.ok || refreshTokenResult.error || refreshTokenPayload.id !== accessTokenPayload.id) {
         throw new InvalidTokenException();
       }
 
       const response = this.requestContextService.getResponse();
+      const jwtDTO = this.authService.issueTokens(requestUser, originUser);
 
-      response.set(ResponseHeader.AccessToken, this.authService.issueAccessToken(user.id));
-      response.set(ResponseHeader.RefreshToken, this.authService.issueRefreshToken(user.id));
+      response.set(ResponseHeader.AccessToken, jwtDTO.accessToken);
+      response.set(ResponseHeader.RefreshToken, jwtDTO.refreshToken);
     }
 
     return true;
