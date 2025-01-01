@@ -27,3 +27,35 @@ export enum HistoryAction {
   Update = 'update',
   Delete = 'delete',
 }
+
+export enum OrderStatus {
+  Created = 'created',
+  Completed = 'completed',
+  Holded = 'holded',
+  Canceled = 'canceled',
+}
+
+export enum OrderClaimType {
+  Return = 'return',
+  Exchange = 'exchange',
+  Cancel = 'cancel',
+}
+
+export enum OrderClaimStatus {
+  Wating = 'wating',
+  Collecting = 'collecting',
+  Collected = 'collected',
+  Completed = 'completed',
+}
+
+export enum DeliveryCompanyCode {
+  Hanjin = 'HJ',
+  Cj = 'CJ',
+  Lotte = 'LOTTE',
+  Directly = 'DIRECT',
+}
+
+export enum DeliveryCompanyStatus {
+  Activated = 'activated',
+  Disabled = 'disabled',
+}
