@@ -11,14 +11,14 @@ export class HanjinSetting {
   @JoinColumn()
   deliveryCompanySetting: DeliveryCompanySetting;
 
+  @Column({ type: 'varchar', length: 255, comment: 'Client ID' })
+  clientId: string;
+
   @Column({ type: 'varchar', length: 255, comment: 'API KEY' })
   apiKey: string;
 
   @Column({ type: 'varchar', length: 255, comment: 'API SECRET' })
   apiSecret: string;
-
-  @Column({ type: 'varchar', length: 255, comment: 'Client ID' })
-  clientId: string;
 
   @CreateDateColumn({ comment: '생성일시' })
   createdAt: Date;

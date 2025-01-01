@@ -21,6 +21,19 @@ export class DeliveryCompanySettingRepository extends Repository<DeliveryCompany
     )?.id;
   }
 
+  async findManyByFulfillmentCenterId(fulfillmentCenterId: string) {
+    return super.find({
+      relations: {
+        deliveryCompany: true,
+        hanjinSetting: true,
+        cjSetting: true,
+        lotteSetting: true,
+        teamfreshSetting: true,
+      },
+      where: { fulfillmentCenterId },
+    });
+  }
+
   async findOneById(id: string) {
     return super.findOne({
       relations: {

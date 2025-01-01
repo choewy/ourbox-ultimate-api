@@ -5,11 +5,13 @@ import { User } from '@/application/domain/entity/user.entity';
 import { DeliveryCompanySettingRepository } from '@/application/domain/repository/delivery-company-setting.repository';
 import { DeliveryCompanyRepository } from '@/application/domain/repository/delivery-company.repository';
 import { CreateDeliveryCompanySettingDTO } from '@/application/dto/request/create-delivery-company-setting.dto';
+import { GetDeliveryCompanySettingsParamDTO } from '@/application/dto/request/get-delivery-company-settings-param.dto';
 import { SetCjSettingDTO } from '@/application/dto/request/set-cj-setting.dto copy';
 import { SetHanjinSettingDTO } from '@/application/dto/request/set-hanjin-setting.dto';
 import { SetLotteSettingDTO } from '@/application/dto/request/set-lotte-setting.dto';
 import { SetTeamfreshSettingDTO } from '@/application/dto/request/set-teamfresh-setting.dto';
 import { UpdateDeliveryCompanySettingDTO } from '@/application/dto/request/update-delivery-company-setting.dto';
+import { DeliveryCompanySettingDTO } from '@/application/dto/response/delivery-company-setting.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import {
   AccessDeninedException,
@@ -27,26 +29,44 @@ export class DeliveryCompanySettingService {
     private readonly deliveryCompanySettingRepository: DeliveryCompanySettingRepository,
   ) {}
 
-  // TODO
-  async getDeliveryCompanySettings() {
-    return;
+  async getDeliveryCompanySettings(param: GetDeliveryCompanySettingsParamDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const fulfillmentCenterId = requestUser.getFulfillmentCenterId(param.fulfillmentCenterId);
+
+    if (!fulfillmentCenterId) {
+      throw new ValidationFailedException([
+        {
+          target: param,
+          value: param.fulfillmentCenterId,
+          property: 'fulfillmentCenterId',
+          children: [],
+          constraints: {
+            isNotEmpty: 'fulfillmentCenterId should not be empty',
+          },
+        },
+      ]);
+    }
+
+    return (await this.deliveryCompanySettingRepository.findManyByFulfillmentCenterId(fulfillmentCenterId)).map(
+      (deliveryCompanySetting) => new DeliveryCompanySettingDTO(deliveryCompanySetting),
+    );
   }
 
-  async createDeliveryCompanySetting(body: CreateDeliveryCompanySettingDTO) {
-    switch (body.code) {
+  private validateDeliveryCompanySetting(code: DeliveryCompanyCode, body: CreateDeliveryCompanySettingDTO | UpdateDeliveryCompanySettingDTO) {
+    switch (code) {
       case DeliveryCompanyCode.Hanjin:
       case DeliveryCompanyCode.HanjinToday:
       case DeliveryCompanyCode.HanjinHoliday:
       case DeliveryCompanyCode.HanjinArriavalGuarentee:
-        if (body.hanjin instanceof SetHanjinSettingDTO === false) {
+        if (body.hanjinSetting instanceof SetHanjinSettingDTO === false) {
           throw new ValidationFailedException([
             {
               target: body,
-              value: body.hanjin,
-              property: 'hanjin',
+              value: body.hanjinSetting,
+              property: 'hanjinSetting',
               children: [],
               constraints: {
-                isNotEmpty: 'hanjin should not be empty',
+                isNotEmpty: 'hanjinSetting should not be empty',
               },
             },
           ]);
@@ -57,15 +77,15 @@ export class DeliveryCompanySettingService {
       case DeliveryCompanyCode.Cj:
       case DeliveryCompanyCode.CjOne:
       case DeliveryCompanyCode.CjArriavalGuarentee:
-        if (body.cj instanceof SetCjSettingDTO === false) {
+        if (body.cjSetting instanceof SetCjSettingDTO === false) {
           throw new ValidationFailedException([
             {
               target: body,
-              value: body.cj,
-              property: 'cj',
+              value: body.cjSetting,
+              property: 'cjSetting',
               children: [],
               constraints: {
-                isNotEmpty: 'cj should not be empty',
+                isNotEmpty: 'cjSetting should not be empty',
               },
             },
           ]);
@@ -74,15 +94,15 @@ export class DeliveryCompanySettingService {
         break;
 
       case DeliveryCompanyCode.Lotte:
-        if (body.lotte instanceof SetLotteSettingDTO === false) {
+        if (body.lotteSetting instanceof SetLotteSettingDTO === false) {
           throw new ValidationFailedException([
             {
               target: body,
-              value: body.lotte,
-              property: 'lotte',
+              value: body.lotteSetting,
+              property: 'lotteSetting',
               children: [],
               constraints: {
-                isNotEmpty: 'lotte should not be empty',
+                isNotEmpty: 'lotteSetting should not be empty',
               },
             },
           ]);
@@ -91,15 +111,15 @@ export class DeliveryCompanySettingService {
         break;
 
       case DeliveryCompanyCode.Teamfresh:
-        if (body.teamfresh instanceof SetTeamfreshSettingDTO === false) {
+        if (body.teamfreshSetting instanceof SetTeamfreshSettingDTO === false) {
           throw new ValidationFailedException([
             {
               target: body,
-              value: body.teamfresh,
-              property: 'teamfresh',
+              value: body.teamfreshSetting,
+              property: 'teamfreshSetting',
               children: [],
               constraints: {
-                isNotEmpty: 'teamfresh should not be empty',
+                isNotEmpty: 'teamfreshSetting should not be empty',
               },
             },
           ]);
@@ -107,6 +127,10 @@ export class DeliveryCompanySettingService {
 
         break;
     }
+  }
+
+  async createDeliveryCompanySetting(body: CreateDeliveryCompanySettingDTO) {
+    this.validateDeliveryCompanySetting(body.code, body);
 
     const requestUser = this.requestContextService.getRequestUser<User>();
     const fulfillmentCenterId = requestUser.getFulfillmentCenterId(body.fulfillmentCenterId);
@@ -138,10 +162,13 @@ export class DeliveryCompanySettingService {
     await this.deliveryCompanySettingRepository.save({
       fulfillmentCenterId,
       deliveryCompanyId: deliveryCompany.id,
-      hanjinSetting: body.hanjin,
-      cjSetting: body.cj,
-      lotteSetting: body.lotte,
-      teamfreshSetting: body.teamfresh,
+      zipCode: body.zipCode,
+      address: body.address,
+      detailAddress: body.detailAddress,
+      hanjinSetting: body.hanjinSetting,
+      cjSetting: body.cjSetting,
+      lotteSetting: body.lotteSetting,
+      teamfreshSetting: body.teamfreshSetting,
     });
   }
 
@@ -152,6 +179,14 @@ export class DeliveryCompanySettingService {
       throw new NotFoundDeliveryCompanySettingException(id);
     }
 
+    const deliveryCompany = deliveryCompanySetting.deliveryCompany;
+
+    if (!deliveryCompany) {
+      throw new NotFoundDeliveryCompanyCodeException();
+    }
+
+    this.validateDeliveryCompanySetting(deliveryCompany.code, body);
+
     const requestUser = this.requestContextService.getRequestUser<User>();
 
     if (
@@ -161,8 +196,15 @@ export class DeliveryCompanySettingService {
       throw new AccessDeninedException();
     }
 
-    // TODO update
-    return body;
+    await this.deliveryCompanySettingRepository.update(id, {
+      zipCode: body.zipCode && body.zipCode !== deliveryCompanySetting.zipCode ? body.zipCode : undefined,
+      address: body.address && body.address !== deliveryCompanySetting.address ? body.address : undefined,
+      detailAddress: body.detailAddress && body.detailAddress !== deliveryCompanySetting.detailAddress ? body.detailAddress : undefined,
+      hanjinSetting: body.hanjinSetting,
+      cjSetting: body.cjSetting,
+      lotteSetting: body.lotteSetting,
+      teamfreshSetting: body.teamfreshSetting,
+    });
   }
 
   async deleteDeliveryCompanySetting(id: string) {
