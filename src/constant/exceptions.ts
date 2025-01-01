@@ -129,3 +129,15 @@ export class NotFoundProductsException<T extends { id: string }> extends Service
     super(ServiceErrorCode.NotFoundProduct, HttpStatus.BAD_REQUEST, undefined, cause);
   }
 }
+
+export class AlreadyExistDeliveryCompanyCodeException extends ServiceErrorException {
+  constructor(code?: string) {
+    super(ServiceErrorCode.AlreadyExistDeliveryCompanyCode, HttpStatus.CONFLICT, undefined, { code });
+  }
+}
+
+export class AlreadyExistDeliveryCompanySettingException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.AlreadyExistDeliveryCompanySetting, HttpStatus.CONFLICT, undefined);
+  }
+}

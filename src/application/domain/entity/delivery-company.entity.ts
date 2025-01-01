@@ -1,13 +1,15 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 
 import { DeliveryCompanyCode } from '../constant/enums';
+import { DeliveryCompanyEntity } from '../constant/interfaces';
 
 @Entity({ name: 'delivery_company', comment: '배송사' })
-export class DeliveryCompany {
+@Unique('delivery_company_code', ['code'])
+export class DeliveryCompany implements DeliveryCompanyEntity {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '배송사 PK' })
   readonly id: string;
 
-  @Column({ type: 'varchar', length: 20, comment: '코드' })
+  @Column({ type: 'varchar', length: 30, comment: '코드' })
   code: DeliveryCompanyCode;
 
   @Column({ type: 'varchar', length: 50, comment: '이름' })

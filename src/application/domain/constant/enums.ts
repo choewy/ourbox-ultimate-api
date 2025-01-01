@@ -50,7 +50,12 @@ export enum OrderClaimStatus {
 
 export enum DeliveryCompanyCode {
   Hanjin = 'HJ',
+  HanjinToday = 'HJ_today',
+  HanjinHoliday = 'HJ_holiday',
+  HanjinArriavalGuarentee = 'HJ_arrival_guarantee',
   Cj = 'CJ',
+  CjOne = 'CJ_one',
+  CjArriavalGuarentee = 'CJ_arrival_guarantee',
   Lotte = 'LOTTE',
   Directly = 'DIRECT',
 }

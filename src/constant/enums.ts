@@ -31,4 +31,6 @@ export enum ServiceErrorCode {
   NotFoundPurchaser = '500',
   NotFoundConsigner = '600',
   NotFoundProduct = '700',
+  AlreadyExistDeliveryCompanyCode = '800',
+  AlreadyExistDeliveryCompanySetting = '801',
 }
