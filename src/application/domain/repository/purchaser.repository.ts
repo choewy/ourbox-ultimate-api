@@ -27,11 +27,12 @@ export class PurchaserRepository extends Repository<Purchaser> {
       take,
     });
   }
+
   async insertOne(executor: User, value: Partial<Purchaser>) {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(Purchaser).insert(target);
+      await em.getRepository(Purchaser).save(target);
       await em.getRepository(PurchaserHistory).insert(new PurchaserHistory(HistoryAction.Insert, executor, target));
     });
   }

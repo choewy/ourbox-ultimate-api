@@ -1,17 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-import { ConsignerHistory } from './consigner-history.entity';
 import { Partner } from './partner.entity';
 
 @Entity({ name: 'consigner', comment: '발송인' })
@@ -49,8 +37,4 @@ export class Consigner {
   @ManyToOne(() => Partner, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn()
   partner: Partner | null;
-
-  @OneToMany(() => ConsignerHistory, (e) => e.target, { cascade: true })
-  @JoinTable()
-  histories: ConsignerHistory[];
 }

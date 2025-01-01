@@ -20,6 +20,7 @@ export enum ServiceErrorCode {
   WrongEmailOrPassword = '102',
   InActivatedAccount = '103',
   AccessDenined = '104',
+  CannotUseResource = '105',
   AlreadyExistUserEmail = '200',
   NotFoundUser = '201',
   NotFoundPartner = '300',
@@ -29,4 +30,5 @@ export enum ServiceErrorCode {
   NotFoundFulfillmentCenter = '402',
   NotFoundPurchaser = '500',
   NotFoundConsigner = '600',
+  NotFoundProduct = '700',
 }

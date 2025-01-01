@@ -37,6 +37,9 @@ export class PurchaserDTO {
     this.detailAddress = purchaser.detailAddress;
     this.createdAt = purchaser.createdAt;
     this.updatedAt = purchaser.updatedAt;
-    this.partner = purchaser.partner ? new PartnerDTO(purchaser.partner) : null;
+
+    if (purchaser.partner) {
+      this.partner = new PartnerDTO(purchaser.partner);
+    }
   }
 }

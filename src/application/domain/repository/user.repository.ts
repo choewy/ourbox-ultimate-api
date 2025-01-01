@@ -55,7 +55,7 @@ export class UserRepository extends Repository<User> {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(User).insert(target);
+      await em.getRepository(User).save(target);
       await em.getRepository(UserHistory).insert(new UserHistory(HistoryAction.Insert, executor, target));
     });
   }

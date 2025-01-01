@@ -58,5 +58,9 @@ export class Product {
 
   @OneToMany(() => ProductComponent, (e) => e.product, { cascade: true })
   @JoinTable()
+  products: ProductComponent[];
+
+  @OneToMany(() => ProductComponent, (e) => e.componentProduct, { cascade: ['remove'] })
+  @JoinTable()
   productComponents: ProductComponent[];
 }

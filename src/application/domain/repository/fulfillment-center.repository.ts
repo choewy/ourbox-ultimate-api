@@ -43,7 +43,7 @@ export class FulfillmentCenterRepository extends Repository<FulfillmentCenter> {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(FulfillmentCenter).insert(target);
+      await em.getRepository(FulfillmentCenter).save(target);
       await em.getRepository(FulfillmentCenterHistory).insert(new FulfillmentCenterHistory(HistoryAction.Insert, executor, target));
     });
   }

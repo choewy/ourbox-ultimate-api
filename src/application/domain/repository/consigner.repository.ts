@@ -32,7 +32,7 @@ export class ConsignerRepository extends Repository<Consigner> {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(Consigner).insert(target);
+      await em.getRepository(Consigner).save(target);
       await em.getRepository(ConsignerHistory).insert(new ConsignerHistory(HistoryAction.Insert, executor, target));
     });
   }

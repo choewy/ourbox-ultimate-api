@@ -56,6 +56,12 @@ export class AccessDeninedException extends ServiceErrorException {
   }
 }
 
+export class CannotUseResourceException extends ServiceErrorException {
+  constructor() {
+    super(ServiceErrorCode.AccessDenined, HttpStatus.FORBIDDEN);
+  }
+}
+
 export class AlreadyExistEmailException extends ServiceErrorException {
   constructor() {
     super(ServiceErrorCode.AlreadyExistUserEmail, HttpStatus.CONFLICT);
@@ -107,5 +113,19 @@ export class NotFoundPurchaserException extends ServiceErrorException {
 export class NotFoundConsignerException extends ServiceErrorException {
   constructor(id?: string) {
     super(ServiceErrorCode.NotFoundConsigner, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundProductException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundProduct, HttpStatus.BAD_REQUEST, undefined, { id });
+  }
+}
+
+export class NotFoundProductsException<T extends { id: string }> extends ServiceErrorException {
+  constructor(ids?: T[]) {
+    const cause = Array.isArray(ids) ? ids.map(({ id }) => ({ id })) : [];
+
+    super(ServiceErrorCode.NotFoundProduct, HttpStatus.BAD_REQUEST, undefined, cause);
   }
 }

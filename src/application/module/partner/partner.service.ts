@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 import { PartnerChannelRepository } from '@/application/domain/repository/partner-channel.repository';
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
@@ -67,15 +66,10 @@ export class PartnerService {
 
   async createPartnerChannel(body: CreatePartnerChannelDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
+    const partnerId: string = requestUser.getPartnerId(body.partnerId);
 
-    let partnerId: string = undefined;
-
-    if (requestUser.type === UserType.Admin && body.partnerId) {
-      if (!(await this.partnerRepository.hasById(body.partnerId))) {
-        throw new NotFoundPartnerException(body.partnerId);
-      }
-
-      partnerId = body.partnerId;
+    if (partnerId && !(await this.partnerRepository.hasById(body.partnerId))) {
+      throw new NotFoundPartnerException(body.partnerId);
     }
 
     await this.partnerChannelRepository.insertOne(requestUser, {

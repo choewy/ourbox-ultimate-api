@@ -22,7 +22,14 @@ export class ProductComponent {
   @Column({ type: 'bigint', unsigned: true, nullable: true, comment: '상품 PK' })
   productId: string;
 
-  @ManyToOne(() => Product, (e) => e.productComponents, { onDelete: 'CASCADE' })
+  @Column({ type: 'bigint', unsigned: true, nullable: true, comment: '구성품 PK' })
+  componentProductId: string;
+
+  @ManyToOne(() => Product, (e) => e.products, { onDelete: 'CASCADE' })
   @JoinColumn()
   product: Product;
+
+  @ManyToOne(() => Product, (e) => e.productComponents, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  componentProduct: Product;
 }

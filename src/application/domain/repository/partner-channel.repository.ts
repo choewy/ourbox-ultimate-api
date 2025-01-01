@@ -36,7 +36,7 @@ export class PartnerChannelRepository extends Repository<PartnerChannel> {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(PartnerChannel).insert(value);
+      await em.getRepository(PartnerChannel).save(target);
       await em.getRepository(PartnerChannelHistory).insert(new PartnerChannelHistory(HistoryAction.Insert, executor, target));
     });
   }

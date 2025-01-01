@@ -32,7 +32,7 @@ export class PartnerRepository extends Repository<Partner> {
     const target = this.create(value);
 
     return this.datatSource.transaction(async (em) => {
-      await em.getRepository(Partner).insert(target);
+      await em.getRepository(Partner).save(target);
       await em.getRepository(PartnerHistory).insert(new PartnerHistory(HistoryAction.Insert, executor, target));
     });
   }

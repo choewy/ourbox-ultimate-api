@@ -83,6 +83,20 @@ export class User {
     }
   }
 
+  public getPartnerChannelId(partnerChannelId?: string) {
+    switch (this.type) {
+      case UserType.Admin:
+      case UserType.PartnerAdmin:
+        return partnerChannelId ?? null;
+
+      case UserType.PartnerUser:
+        return this.partnerChannelId;
+
+      default:
+        return null;
+    }
+  }
+
   public getFulfillmentId(fulfillmentId?: string) {
     switch (this.type) {
       case UserType.Admin:
