@@ -112,4 +112,18 @@ export class User {
         return null;
     }
   }
+
+  public getFulfillmentCenterId(fulfillmentCenterId?: string) {
+    switch (this.type) {
+      case UserType.Admin:
+      case UserType.FulfillmentAdmin:
+        return fulfillmentCenterId ?? null;
+
+      case UserType.FulfillmentUser:
+        return this.fulfillmentCenterId;
+
+      default:
+        return null;
+    }
+  }
 }

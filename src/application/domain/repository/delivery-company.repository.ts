@@ -16,4 +16,8 @@ export class DeliveryCompanyRepository extends Repository<DeliveryCompany> {
   async hasByCode(code: DeliveryCompanyCode) {
     return !!(await super.findOne({ select: { code: true }, where: { code } }))?.code;
   }
+
+  async findOneByCode(code: DeliveryCompanyCode) {
+    return super.findOneBy({ code });
+  }
 }

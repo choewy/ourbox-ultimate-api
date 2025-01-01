@@ -136,8 +136,20 @@ export class AlreadyExistDeliveryCompanyCodeException extends ServiceErrorExcept
   }
 }
 
+export class NotFoundDeliveryCompanyCodeException extends ServiceErrorException {
+  constructor(code?: string) {
+    super(ServiceErrorCode.AlreadyExistDeliveryCompanyCode, HttpStatus.BAD_REQUEST, undefined, { code });
+  }
+}
+
 export class AlreadyExistDeliveryCompanySettingException extends ServiceErrorException {
   constructor() {
     super(ServiceErrorCode.AlreadyExistDeliveryCompanySetting, HttpStatus.CONFLICT, undefined);
+  }
+}
+
+export class NotFoundDeliveryCompanySettingException extends ServiceErrorException {
+  constructor(id?: string) {
+    super(ServiceErrorCode.NotFoundDeliveryCompanySetting, HttpStatus.BAD_REQUEST, undefined, { id });
   }
 }

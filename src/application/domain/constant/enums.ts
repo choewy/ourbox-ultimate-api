@@ -57,7 +57,8 @@ export enum DeliveryCompanyCode {
   CjOne = 'CJ_one',
   CjArriavalGuarentee = 'CJ_arrival_guarantee',
   Lotte = 'LOTTE',
-  Directly = 'DIRECT',
+  Teamfresh = 'TEAMFRESH',
+  Directly = 'DIRECTLY',
 }
 
 export enum DeliveryCompanyStatus {

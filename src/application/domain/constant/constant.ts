@@ -39,4 +39,8 @@ export const DELIVERY_COMPANIES: DeliveryCompanyEntity[] = [
     code: DeliveryCompanyCode.Lotte,
     name: '롯데택배',
   },
+  {
+    code: DeliveryCompanyCode.Teamfresh,
+    name: '팀프레시',
+  },
 ];

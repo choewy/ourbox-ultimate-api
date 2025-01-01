@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { CjSetting } from './delivery-company-settings/cj-setting.entity';
 import { HanjinSetting } from './delivery-company-settings/hanjin-setting.entity';
@@ -8,6 +8,7 @@ import { DeliveryCompany } from './delivery-company.entity';
 import { FulfillmentCenter } from './fulfillment-center.entity';
 
 @Entity({ name: 'delivery_company_setting', comment: '풀필먼트 센터 택배사 설정' })
+@Index('key', ['fulfillmentCenterId', 'deliveryCompanyId'])
 export class DeliveryCompanySetting {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true, comment: '풀필먼트 택배사 설정 PK' })
   readonly id: string;
