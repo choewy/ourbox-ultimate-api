@@ -1,4 +1,16 @@
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  JoinTable,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 import { CjSetting } from './delivery-company-settings/cj-setting.entity';
 import { HanjinSetting } from './delivery-company-settings/hanjin-setting.entity';
@@ -35,6 +47,15 @@ export class DeliveryCompanySetting {
 
   @Column({ type: 'varchar', length: 255, comment: '발송지 상세주소' })
   detailAddress: string;
+
+  @CreateDateColumn({ comment: '생성일시' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ comment: '수정일시' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ comment: '삭제일시' })
+  deletedAt: Date | null;
 
   @OneToOne(() => HanjinSetting, (e) => e.deliveryCompanySetting, { nullable: true, cascade: true })
   @JoinTable()

@@ -21,6 +21,12 @@ export class DeliveryCompanySettingDTO {
   @ApiResponseProperty({ type: String })
   detailAddress: string;
 
+  @ApiResponseProperty({ type: Date })
+  createdAt: Date;
+
+  @ApiResponseProperty({ type: Date })
+  updatedAt: Date;
+
   @ApiResponseProperty({ type: DeliveryCompanyDTO })
   deliveryCompany: DeliveryCompanyDTO;
 
@@ -41,6 +47,8 @@ export class DeliveryCompanySettingDTO {
     this.zipCode = deliveryCompanySetting.zipCode;
     this.address = deliveryCompanySetting.address;
     this.detailAddress = deliveryCompanySetting.detailAddress;
+    this.createdAt = deliveryCompanySetting.createdAt;
+    this.updatedAt = deliveryCompanySetting.updatedAt;
 
     if (deliveryCompanySetting.deliveryCompany) {
       this.deliveryCompany = new DeliveryCompanyDTO(deliveryCompanySetting.deliveryCompany);

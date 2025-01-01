@@ -159,7 +159,7 @@ export class DeliveryCompanySettingService {
       throw new AlreadyExistDeliveryCompanySettingException();
     }
 
-    await this.deliveryCompanySettingRepository.save({
+    await this.deliveryCompanySettingRepository.insertOne({
       fulfillmentCenterId,
       deliveryCompanyId: deliveryCompany.id,
       zipCode: body.zipCode,
@@ -196,7 +196,7 @@ export class DeliveryCompanySettingService {
       throw new AccessDeninedException();
     }
 
-    await this.deliveryCompanySettingRepository.update(id, {
+    await this.deliveryCompanySettingRepository.updateOne(id, {
       zipCode: body.zipCode && body.zipCode !== deliveryCompanySetting.zipCode ? body.zipCode : undefined,
       address: body.address && body.address !== deliveryCompanySetting.address ? body.address : undefined,
       detailAddress: body.detailAddress && body.detailAddress !== deliveryCompanySetting.detailAddress ? body.detailAddress : undefined,
@@ -223,6 +223,6 @@ export class DeliveryCompanySettingService {
       throw new AccessDeninedException();
     }
 
-    await this.deliveryCompanySettingRepository.softDelete(deliveryCompanySetting);
+    await this.deliveryCompanySettingRepository.deleteOne(deliveryCompanySetting.id);
   }
 }
