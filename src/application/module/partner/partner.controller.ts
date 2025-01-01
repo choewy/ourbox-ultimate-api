@@ -17,6 +17,7 @@ import { PartnerChannelsDTO } from '@/application/dto/response/partner-channels.
 import { PartnersDTO } from '@/application/dto/response/partners.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
+// TODO 고객사, 고객사 판매채널 모듈 분리할 것
 @ApiTags('고객사')
 @RequiredAuth()
 @Controller('partners')

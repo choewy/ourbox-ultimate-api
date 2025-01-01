@@ -17,6 +17,7 @@ import { FulfillmentCentersDTO } from '@/application/dto/response/fulfillment-ce
 import { FulfillmentsDTO } from '@/application/dto/response/fulfillments.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
+// TODO 풀필먼트, 풀필먼트 센터 모듈 분리할 것
 @ApiTags('풀필먼트')
 @RequiredAuth()
 @Controller('fulfillments')
