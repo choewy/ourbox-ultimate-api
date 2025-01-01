@@ -1,3 +1,7 @@
+// TODO 호출부 삭제하고 직접 값 집어넣을 것
+/**
+ * @deprecated
+ */
 export class ObjectUtil<Entity, Target> {
   constructor(
     private readonly entity: Entity,
