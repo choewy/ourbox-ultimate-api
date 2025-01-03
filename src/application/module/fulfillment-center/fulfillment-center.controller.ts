@@ -13,7 +13,7 @@ import { UpdateFulfillmentCenterDTO } from '@/application/dto/request/update-ful
 import { FulfillmentCentersDTO } from '@/application/dto/response/fulfillment-centers.dto';
 import { ApiException } from '@/common/swagger/decorator';
 
-@ApiTags('풀필먼트')
+@ApiTags('풀필먼트 센터')
 @RequiredAuth()
 @Controller('fulfillment-centers')
 export class FulfillmentCenterController {
