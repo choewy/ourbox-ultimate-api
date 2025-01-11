@@ -37,7 +37,7 @@ export class ApplicationConfigFactory {
 
   public get corsOptions(): CorsOptions {
     return {
-      origin: this.configService.getOrThrow('CORS_ORIGIN'),
+      origin: new RegExp(this.configService.getOrThrow('CORS_ORIGIN')),
     };
   }
 
