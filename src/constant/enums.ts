@@ -36,3 +36,13 @@ export enum ServiceErrorCode {
   AlreadyExistDeliveryCompanySetting = '900',
   NotFoundDeliveryCompanySetting = '901',
 }
+
+export enum OrderBy {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export enum TypeOrmOrderBy {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}

@@ -38,19 +38,6 @@ export class UserRepository extends Repository<User> {
     return this.existsBy({ email });
   }
 
-  async findManyAndCount(skip: number, take: number) {
-    return this.findAndCount({
-      relations: {
-        partner: true,
-        partnerChannel: { partner: true },
-        fulfillment: true,
-        fulfillmentCenter: { fulfillment: true },
-      },
-      skip,
-      take,
-    });
-  }
-
   async insertOne(executor: User, value: Partial<User>) {
     const target = this.create(value);
 

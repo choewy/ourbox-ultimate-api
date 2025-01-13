@@ -12,9 +12,9 @@ import { PartnerChannelRepository } from '@/application/domain/repository/partne
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
-import { GetUserssParamDTO } from '@/application/dto/request/get-users-param.dto';
+import { GetUsersParamDTO } from '@/application/dto/request/get-users-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
-import { UsersDTO } from '@/application/dto/response/users.dto';
+import { UserListDTO } from '@/application/dto/response/user-list.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import {
   AlreadyExistEmailException,
@@ -25,7 +25,6 @@ import {
   NotFoundUserException,
   ValidationFailedException,
 } from '@/constant/exceptions';
-import { ObjectUtil } from '@/constant/util/object.util';
 import { PasswordVO } from '@/constant/vo/password.vo';
 
 @Injectable()
@@ -39,10 +38,128 @@ export class UserService {
     private readonly fulfillmentCenterRepository: FulfillmentCenterRepository,
   ) {}
 
-  async getUsers(param: GetUserssParamDTO) {
-    const rowsAndCount = await this.userRepository.findManyAndCount(param.skip, param.take);
+  async getUserList(body: GetUsersParamDTO) {
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndMapOne('user.partner', 'user.partner', 'partner')
+      .leftJoinAndMapOne('user.partnerChannel', 'user.partnerChannel', 'partnerChannel')
+      .leftJoinAndMapOne('user.fulfillment', 'user.fulfillment', 'fulfillment')
+      .leftJoinAndMapOne('user.fulfillmentCenter', 'user.fulfillmentCenter', 'fulfillmentCenter')
+      .where('1 = 1')
+      .skip(Math.min(body.skip, 100))
+      .take(Math.min(body.take, 100));
 
-    return new UsersDTO(param, rowsAndCount);
+    const requestUser = this.requestContextService.getRequestUser<User>();
+
+    switch (requestUser.type) {
+      case UserType.PartnerAdmin:
+        qb.andWhere('partner.id = :id', { id: requestUser.partnerId });
+        break;
+
+      case UserType.PartnerUser:
+        qb.andWhere('partnerChannel.id = :id', { id: requestUser.partnerChannelId });
+        break;
+
+      case UserType.FulfillmentAdmin:
+        qb.andWhere('fulfillment.id = :id', { id: requestUser.fulfillmentId });
+        break;
+
+      case UserType.FulfillmentUser:
+        qb.andWhere('fulfillmentCenter.id = :id', { id: requestUser.fulfillmentCenterId });
+        break;
+    }
+
+    if (body.keyword?.id) {
+      qb.andWhere('user.id = :id', { id: body.keyword.id });
+    }
+
+    if (body.keyword?.name) {
+      qb.andWhere('user.name LIKE "%:name%"', { name: body.keyword.name });
+    }
+
+    if (body.keyword?.type) {
+      qb.andWhere('user.type = :type', { type: body.keyword.type });
+    }
+
+    if (body.keyword?.email) {
+      qb.andWhere('user.email LIKE "%:email%"', { email: body.keyword.email });
+    }
+
+    if (body.keyword?.partner) {
+      qb.andWhere('partner.name LIKE "%:partner%"', { partner: body.keyword.partner });
+    }
+
+    if (body.keyword?.partnerChannel) {
+      qb.andWhere('partnerChannel.name LIKE "%:partnerChannel%"', { partnerChannel: body.keyword.partnerChannel });
+    }
+
+    if (body.keyword?.fulfillment) {
+      qb.andWhere('fulfillment.name LIKE "%:fulfillment%"', { fulfillment: body.keyword.fulfillment });
+    }
+
+    if (body.keyword?.fulfillmentCenter) {
+      qb.andWhere('fulfillmentCenter.name LIKE "%:fulfillmentCenter%"', { fulfillmentCenter: body.keyword.fulfillmentCenter });
+    }
+
+    if (body.dateRange?.createdAt?.startDate) {
+      qb.andWhere('user.createdAt >= :startDate', { startDate: body.dateRange.createdAt.startDate.toSQL() });
+    }
+
+    if (body.dateRange?.createdAt?.endDate) {
+      qb.andWhere('user.createdAt <= :endDate', { endDate: body.dateRange.createdAt.endDate.toSQL() });
+    }
+
+    if (body.dateRange?.updatedAt?.startDate) {
+      qb.andWhere('user.updatedAt >= :startDate', { startDate: body.dateRange.updatedAt.startDate.toSQL() });
+    }
+
+    if (body.dateRange?.updatedAt?.endDate) {
+      qb.andWhere('user.updatedAt <= :endDate', { endDate: body.dateRange.updatedAt.endDate.toSQL() });
+    }
+
+    if (body.orderBy?.name) {
+      qb.addOrderBy('user.name', body.orderBy.name);
+    }
+
+    if (body.orderBy?.type) {
+      qb.addOrderBy('user.type', body.orderBy.type);
+    }
+
+    if (body.orderBy?.name) {
+      qb.addOrderBy('user.name', body.orderBy.name);
+    }
+
+    if (body.orderBy?.email) {
+      qb.addOrderBy('user.email', body.orderBy.email);
+    }
+
+    if (body.orderBy?.createdAt) {
+      qb.addOrderBy('user.createdAt', body.orderBy.createdAt);
+    }
+
+    if (body.orderBy?.updatedAt) {
+      qb.addOrderBy('user.updatedAt', body.orderBy.updatedAt);
+    }
+
+    if (body.orderBy?.partner) {
+      qb.addOrderBy('partner.name', body.orderBy.partner);
+    }
+
+    if (body.orderBy?.partnerChannel) {
+      qb.addOrderBy('partnerChannel.name', body.orderBy.partnerChannel);
+    }
+
+    if (body.orderBy?.fulfillment) {
+      qb.addOrderBy('fulfillment.name', body.orderBy.fulfillment);
+    }
+
+    if (body.orderBy?.fulfillmentCenter) {
+      qb.addOrderBy('fulfillmentCenter.name', body.orderBy.fulfillmentCenter);
+    }
+
+    const rowsAndCount = await qb.getManyAndCount();
+
+    return new UserListDTO(body, rowsAndCount);
   }
 
   async createUser(body: CreateUserDTO) {
@@ -189,7 +306,14 @@ export class UserService {
       throw new NotFoundFulfillmentCenterException(body.fulfillmentCenterId);
     }
 
-    await this.userRepository.updateOne(requestUser, user, new ObjectUtil(user, body).getValues());
+    await this.userRepository.updateOne(requestUser, user, {
+      name: body.name && body.name !== user.name ? body.name : undefined,
+      status: body.status && body.status !== user.status ? body.status : undefined,
+      partnerId: body.partnerId && body.partnerId !== user.partnerId ? body.partnerId : undefined,
+      partnerChannelId: body.partnerChannelId && body.partnerChannelId !== user.partnerChannelId ? body.partnerChannelId : undefined,
+      fulfillmentId: body.fulfillmentId && body.fulfillmentId !== user.fulfillmentId ? body.fulfillmentId : undefined,
+      fulfillmentCenterId: body.fulfillmentCenterId && body.fulfillmentCenterId !== user.fulfillmentCenterId ? body.fulfillmentCenterId : undefined,
+    });
   }
 
   async deleteUser(id: string) {
