@@ -10,10 +10,12 @@ import { PartnerModule } from './module/partner/partner.module';
 import { PartnerChannelModule } from './module/partner-channel/partner-channel.module';
 import { ProductModule } from './module/product/product.module';
 import { PurchaserModule } from './module/purchaser/purchaser.module';
+import { TestingModule } from './module/testing/testing.module';
 import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
+    TestingModule,
     AuthModule,
     UserModule,
     PartnerModule,
