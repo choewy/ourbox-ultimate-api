@@ -30,7 +30,7 @@ export class Product {
   @Column({ type: 'varchar', length: 10, comment: '단위' })
   unit: ProductUnit;
 
-  @Column({ type: 'smallint', unsigned: true, comment: '단위 입수량' })
+  @Column({ type: 'mediumint', unsigned: true, comment: '단위 입수량' })
   unitCount: number;
 
   @CreateDateColumn({ comment: '생성일시' })
