@@ -92,19 +92,13 @@ export class GetUserListOrderByDTO
 }
 
 export class GetUserListKeywordDTO
-  implements Partial<Record<keyof Pick<UserDTO, 'id' | 'type' | 'email' | 'name' | 'partner' | 'partnerChannel' | 'fulfillment' | 'fulfillmentCenter'>, string>>
+  implements Partial<Record<keyof Pick<UserDTO, 'id' | 'email' | 'name' | 'partner' | 'partnerChannel' | 'fulfillment' | 'fulfillmentCenter'>, string>>
 {
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
   @Trim()
   id?: string;
-
-  @ApiPropertyOptional({ type: String })
-  @IsString()
-  @IsOptional()
-  @Trim()
-  type?: string;
 
   @ApiPropertyOptional({ type: String })
   @IsString()

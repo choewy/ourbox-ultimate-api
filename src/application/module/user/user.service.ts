@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { And, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
 import { UserType } from '@/application/domain/constant/enums';
 import { FulfillmentCenter } from '@/application/domain/entity/fulfillment-center.entity';
@@ -42,125 +43,61 @@ export class UserService {
 
   async getUserList(body: GetUserListParamDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
-    const qb = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndMapOne('user.partner', 'user.partner', 'partner')
-      .leftJoinAndMapOne('user.partnerChannel', 'user.partnerChannel', 'partnerChannel')
-      .leftJoinAndMapOne('user.fulfillment', 'user.fulfillment', 'fulfillment')
-      .leftJoinAndMapOne('user.fulfillmentCenter', 'user.fulfillmentCenter', 'fulfillmentCenter')
-      .where('1 = 1')
-      .skip(Math.min(body.skip, 100))
-      .take(Math.min(body.take, 100));
 
-    switch (requestUser.type) {
-      case UserType.PartnerAdmin:
-        qb.andWhere('partner.id = :id', { id: requestUser.partnerId });
-        break;
+    const result = await this.userRepository.findAndCount({
+      relations: {
+        partner: true,
+        partnerChannel: true,
+        fulfillment: true,
+        fulfillmentCenter: true,
+      },
+      where: {
+        partnerId: requestUser.type === UserType.PartnerAdmin ? requestUser.partnerId : undefined,
+        partnerChannelId: requestUser.type === UserType.PartnerUser ? requestUser.partnerChannelId : undefined,
+        fulfillmentId: requestUser.type === UserType.FulfillmentAdmin ? requestUser.fulfillmentId : undefined,
+        fulfillmentCenterId: requestUser.type === UserType.FulfillmentUser ? requestUser.fulfillmentCenterId : undefined,
+        id: body.keyword?.id ?? undefined,
+        name: body.keyword?.name ? Like(`%${body.keyword.name}%`) : undefined,
+        email: body.keyword?.email ? Like(`%${body.keyword.email}%`) : undefined,
+        partner: { name: body.keyword?.partner ? Like(`%${body.keyword.partner}%`) : undefined },
+        partnerChannel: { name: body.keyword?.partnerChannel ? Like(`%${body.keyword.partnerChannel}%`) : undefined },
+        fulfillment: { name: body.keyword?.fulfillment ? Like(`%${body.keyword.fulfillment}%`) : undefined },
+        fulfillmentCenter: { name: body.keyword?.fulfillmentCenter ? Like(`%${body.keyword.fulfillmentCenter}%`) : undefined },
+        createdAt:
+          body.dateRange?.createdAt?.startDate || body.dateRange?.createdAt?.endDate
+            ? And(
+                ...[
+                  body.dateRange.createdAt?.startDate ? MoreThanOrEqual(body.dateRange.createdAt.startDate.toJSDate()) : undefined,
+                  body.dateRange.createdAt?.endDate ? LessThanOrEqual(body.dateRange.createdAt.endDate.toJSDate()) : undefined,
+                ].filter((val) => val),
+              )
+            : undefined,
+        updatedAt:
+          body.dateRange?.updatedAt?.startDate || body.dateRange?.updatedAt?.endDate
+            ? And(
+                ...[
+                  body.dateRange.updatedAt?.startDate ? MoreThanOrEqual(body.dateRange.updatedAt.startDate.toJSDate()) : undefined,
+                  body.dateRange.updatedAt?.endDate ? LessThanOrEqual(body.dateRange.updatedAt.endDate.toJSDate()) : undefined,
+                ].filter((val) => val),
+              )
+            : undefined,
+      },
+      order: {
+        name: body.orderBy?.name ?? undefined,
+        type: body.orderBy?.type ?? undefined,
+        email: body.orderBy?.email ?? undefined,
+        createdAt: body.orderBy?.createdAt ?? undefined,
+        updatedAt: body.orderBy?.updatedAt ?? undefined,
+        partner: { name: body.orderBy?.partner ?? undefined },
+        partnerChannel: { name: body.orderBy?.partnerChannel ?? undefined },
+        fulfillment: { name: body.orderBy?.fulfillment ?? undefined },
+        fulfillmentCenter: { name: body.orderBy?.fulfillmentCenter ?? undefined },
+      },
+      skip: Math.max(body.skip, 0),
+      take: Math.min(body.take, 100),
+    });
 
-      case UserType.PartnerUser:
-        qb.andWhere('partnerChannel.id = :id', { id: requestUser.partnerChannelId });
-        break;
-
-      case UserType.FulfillmentAdmin:
-        qb.andWhere('fulfillment.id = :id', { id: requestUser.fulfillmentId });
-        break;
-
-      case UserType.FulfillmentUser:
-        qb.andWhere('fulfillmentCenter.id = :id', { id: requestUser.fulfillmentCenterId });
-        break;
-    }
-
-    if (body.keyword?.id) {
-      qb.andWhere('user.id = :id', { id: body.keyword.id });
-    }
-
-    if (body.keyword?.name) {
-      qb.andWhere('user.name LIKE "%:name%"', { name: body.keyword.name });
-    }
-
-    if (body.keyword?.type) {
-      qb.andWhere('user.type = :type', { type: body.keyword.type });
-    }
-
-    if (body.keyword?.email) {
-      qb.andWhere('user.email LIKE "%:email%"', { email: body.keyword.email });
-    }
-
-    if (body.keyword?.partner) {
-      qb.andWhere('partner.name LIKE "%:partner%"', { partner: body.keyword.partner });
-    }
-
-    if (body.keyword?.partnerChannel) {
-      qb.andWhere('partnerChannel.name LIKE "%:partnerChannel%"', { partnerChannel: body.keyword.partnerChannel });
-    }
-
-    if (body.keyword?.fulfillment) {
-      qb.andWhere('fulfillment.name LIKE "%:fulfillment%"', { fulfillment: body.keyword.fulfillment });
-    }
-
-    if (body.keyword?.fulfillmentCenter) {
-      qb.andWhere('fulfillmentCenter.name LIKE "%:fulfillmentCenter%"', { fulfillmentCenter: body.keyword.fulfillmentCenter });
-    }
-
-    if (body.dateRange?.createdAt?.startDate) {
-      qb.andWhere('user.createdAt >= :startDate', { startDate: body.dateRange.createdAt.startDate.toSQL() });
-    }
-
-    if (body.dateRange?.createdAt?.endDate) {
-      qb.andWhere('user.createdAt <= :endDate', { endDate: body.dateRange.createdAt.endDate.toSQL() });
-    }
-
-    if (body.dateRange?.updatedAt?.startDate) {
-      qb.andWhere('user.updatedAt >= :startDate', { startDate: body.dateRange.updatedAt.startDate.toSQL() });
-    }
-
-    if (body.dateRange?.updatedAt?.endDate) {
-      qb.andWhere('user.updatedAt <= :endDate', { endDate: body.dateRange.updatedAt.endDate.toSQL() });
-    }
-
-    if (body.orderBy?.name) {
-      qb.addOrderBy('user.name', body.orderBy.name);
-    }
-
-    if (body.orderBy?.type) {
-      qb.addOrderBy('user.type', body.orderBy.type);
-    }
-
-    if (body.orderBy?.name) {
-      qb.addOrderBy('user.name', body.orderBy.name);
-    }
-
-    if (body.orderBy?.email) {
-      qb.addOrderBy('user.email', body.orderBy.email);
-    }
-
-    if (body.orderBy?.createdAt) {
-      qb.addOrderBy('user.createdAt', body.orderBy.createdAt);
-    }
-
-    if (body.orderBy?.updatedAt) {
-      qb.addOrderBy('user.updatedAt', body.orderBy.updatedAt);
-    }
-
-    if (body.orderBy?.partner) {
-      qb.addOrderBy('partner.name', body.orderBy.partner);
-    }
-
-    if (body.orderBy?.partnerChannel) {
-      qb.addOrderBy('partnerChannel.name', body.orderBy.partnerChannel);
-    }
-
-    if (body.orderBy?.fulfillment) {
-      qb.addOrderBy('fulfillment.name', body.orderBy.fulfillment);
-    }
-
-    if (body.orderBy?.fulfillmentCenter) {
-      qb.addOrderBy('fulfillmentCenter.name', body.orderBy.fulfillmentCenter);
-    }
-
-    const rowsAndCount = await qb.getManyAndCount();
-
-    return new UserListDTO(body, rowsAndCount);
+    return new UserListDTO(body, result);
   }
 
   async getUserById(param: IdParamDTO) {
