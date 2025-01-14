@@ -37,7 +37,7 @@ export class UserController {
   }
 
   @Post()
-  @RequiredUserTypes(UserType.Admin)
+  @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.FulfillmentAdmin)
   @ApiOperation({ summary: '사용자 계정 생성' })
   @ApiCreatedResponse()
   @ApiException(HttpStatus.CONFLICT)
@@ -47,7 +47,7 @@ export class UserController {
 
   @Patch(':id(\\d+)')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @RequiredUserTypes(UserType.Admin)
+  @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.FulfillmentAdmin)
   @ApiOperation({ summary: '사용자 계정 수정' })
   @ApiException()
   async updateUser(@Param() param: IdParamDTO, @Body() body: UpdateUserDTO) {
@@ -56,7 +56,7 @@ export class UserController {
 
   @Delete(':id(\\d+)')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @RequiredUserTypes(UserType.Admin)
+  @RequiredUserTypes(UserType.Admin, UserType.PartnerAdmin, UserType.FulfillmentAdmin)
   @ApiOperation({ summary: '사용자 계정 삭제' })
   @ApiException()
   async deleteUser(@Param() param: IdParamDTO) {

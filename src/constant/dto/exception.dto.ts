@@ -44,10 +44,9 @@ export class ExceptionDTO {
     const exceptionDTO = new ExceptionDTO(request);
 
     exceptionDTO.name = Object.getPrototypeOf(e).constructor.name.replace('Exception', '');
-    exceptionDTO.statusCode = HttpStatus.BAD_REQUEST;
-    exceptionDTO.errorCode = ServiceErrorCode.ValidationError;
+    exceptionDTO.statusCode = e.statusCode;
+    exceptionDTO.errorCode = e.errorCode;
     exceptionDTO.message = e.message;
-    exceptionDTO.cause = e.errors;
 
     return exceptionDTO;
   }

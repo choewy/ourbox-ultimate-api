@@ -34,17 +34,7 @@ export class DeliveryCompanySettingService {
     const fulfillmentCenterId = requestUser.getFulfillmentCenterId(param.fulfillmentCenterId);
 
     if (!fulfillmentCenterId) {
-      throw new ValidationFailedException([
-        {
-          target: param,
-          value: param.fulfillmentCenterId,
-          property: 'fulfillmentCenterId',
-          children: [],
-          constraints: {
-            isNotEmpty: 'fulfillmentCenterId should not be empty',
-          },
-        },
-      ]);
+      throw new ValidationFailedException('fulfillmentCenterId should not be empty');
     }
 
     return (await this.deliveryCompanySettingRepository.findManyByFulfillmentCenterId(fulfillmentCenterId)).map(
@@ -59,17 +49,7 @@ export class DeliveryCompanySettingService {
       case DeliveryCompanyCode.HanjinHoliday:
       case DeliveryCompanyCode.HanjinArriavalGuarentee:
         if (body.hanjinSetting instanceof SetHanjinSettingDTO === false) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.hanjinSetting,
-              property: 'hanjinSetting',
-              children: [],
-              constraints: {
-                isNotEmpty: 'hanjinSetting should not be empty',
-              },
-            },
-          ]);
+          throw new ValidationFailedException('hanjinSetting should not be empty');
         }
 
         break;
@@ -78,51 +58,21 @@ export class DeliveryCompanySettingService {
       case DeliveryCompanyCode.CjOne:
       case DeliveryCompanyCode.CjArriavalGuarentee:
         if (body.cjSetting instanceof SetCjSettingDTO === false) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.cjSetting,
-              property: 'cjSetting',
-              children: [],
-              constraints: {
-                isNotEmpty: 'cjSetting should not be empty',
-              },
-            },
-          ]);
+          throw new ValidationFailedException('cjSetting should not be empty');
         }
 
         break;
 
       case DeliveryCompanyCode.Lotte:
         if (body.lotteSetting instanceof SetLotteSettingDTO === false) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.lotteSetting,
-              property: 'lotteSetting',
-              children: [],
-              constraints: {
-                isNotEmpty: 'lotteSetting should not be empty',
-              },
-            },
-          ]);
+          throw new ValidationFailedException('lotteSetting should not be empty');
         }
 
         break;
 
       case DeliveryCompanyCode.Teamfresh:
         if (body.teamfreshSetting instanceof SetTeamfreshSettingDTO === false) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.teamfreshSetting,
-              property: 'teamfreshSetting',
-              children: [],
-              constraints: {
-                isNotEmpty: 'teamfreshSetting should not be empty',
-              },
-            },
-          ]);
+          throw new ValidationFailedException('teamfreshSetting should not be empty');
         }
 
         break;
@@ -136,17 +86,7 @@ export class DeliveryCompanySettingService {
     const fulfillmentCenterId = requestUser.getFulfillmentCenterId(body.fulfillmentCenterId);
 
     if ([UserType.Admin, UserType.FulfillmentAdmin].includes(requestUser.type) && !fulfillmentCenterId) {
-      throw new ValidationFailedException([
-        {
-          target: body,
-          value: fulfillmentCenterId,
-          property: 'fulfillmentCenterId',
-          children: [],
-          constraints: {
-            isNotEmpty: 'fulfillmentCenterId should not be empty',
-          },
-        },
-      ]);
+      throw new ValidationFailedException('fulfillmentCenterId should not be empty');
     }
 
     const deliveryCompany = await this.deliveryCompanyRepository.findOneByCode(body.code);

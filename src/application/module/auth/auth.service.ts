@@ -80,17 +80,7 @@ export class AuthService implements OnApplicationBootstrap {
     }
 
     if (!body.otherId) {
-      throw new ValidationFailedException([
-        {
-          target: body,
-          value: body.otherId,
-          property: 'otherId',
-          children: [],
-          constraints: {
-            isNotEmpty: 'otherId should not be empty',
-          },
-        },
-      ]);
+      throw new ValidationFailedException('otherId should not be empty');
     }
 
     const otherUser = await this.userRepository.findOneById(body.otherId);

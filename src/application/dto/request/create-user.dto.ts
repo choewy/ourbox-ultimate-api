@@ -6,11 +6,6 @@ import { UserType } from '@/application/domain/constant/enums';
 import { IsSameString } from '@/constant/validator/is-same-string';
 
 export class CreateUserDTO {
-  @ApiProperty({ type: String, enum: EDITABLE_USER_TYPES })
-  @IsEnum(EDITABLE_USER_TYPES)
-  @IsNotEmpty()
-  type: UserType;
-
   @ApiProperty({ type: String, format: 'email' })
   @IsEmail()
   @IsNotEmpty()
@@ -30,6 +25,11 @@ export class CreateUserDTO {
   @IsSameString('password')
   @IsNotEmpty()
   confirmPassword: string;
+
+  @ApiPropertyOptional({ type: String, enum: EDITABLE_USER_TYPES })
+  @IsEnum(EDITABLE_USER_TYPES)
+  @IsOptional()
+  type?: UserType;
 
   @ApiPropertyOptional({ type: String })
   @IsNumberString()

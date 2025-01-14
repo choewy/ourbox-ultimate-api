@@ -39,17 +39,7 @@ export class ProductService {
     }
 
     if (!Array.isArray(body.productComponents) || body.productComponents.length === 0) {
-      throw new ValidationFailedException([
-        {
-          target: body,
-          value: body.productComponents,
-          property: 'productComponents',
-          children: [],
-          constraints: {
-            isNotEmpty: 'productComponents should not be empty',
-          },
-        },
-      ]);
+      throw new ValidationFailedException('productComponents should not be empty');
     }
 
     const productComponentIds = body.productComponents.map(({ productId }) => productId);

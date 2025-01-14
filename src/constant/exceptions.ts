@@ -1,14 +1,16 @@
-import { HttpStatus, ValidationError } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
 import { ServiceErrorCode } from './enums';
 
 export class ValidationFailedException {
+  readonly errorCode: ServiceErrorCode;
+  readonly statusCode: HttpStatus;
   readonly message: string;
-  readonly errors: ValidationError[];
 
-  constructor(errors: ValidationError[]) {
-    this.message = 'ValidationFailed';
-    this.errors = errors;
+  constructor(message: string) {
+    this.message = message;
+    this.errorCode = ServiceErrorCode.ValidationError;
+    this.statusCode = HttpStatus.BAD_REQUEST;
   }
 }
 

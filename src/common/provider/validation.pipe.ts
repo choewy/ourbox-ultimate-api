@@ -13,7 +13,10 @@ export class ValidationPipe extends NestValidationPipe {
       },
       stopAtFirstError: true,
       exceptionFactory(errors) {
-        return new ValidationFailedException(errors);
+        const error = errors.shift();
+        const message = Object.values(error.constraints).shift();
+
+        return new ValidationFailedException(message);
       },
     });
   }

@@ -2,10 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { And, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
 import { UserType } from '@/application/domain/constant/enums';
-import { FulfillmentCenter } from '@/application/domain/entity/fulfillment-center.entity';
-import { Fulfillment } from '@/application/domain/entity/fulfillment.entity';
-import { PartnerChannel } from '@/application/domain/entity/partner-channel.entity';
-import { Partner } from '@/application/domain/entity/partner.entity';
 import { User } from '@/application/domain/entity/user.entity';
 import { FulfillmentCenterRepository } from '@/application/domain/repository/fulfillment-center.repository';
 import { FulfillmentRepository } from '@/application/domain/repository/fulfillment.repository';
@@ -20,6 +16,7 @@ import { UserListDTO } from '@/application/dto/response/user-list.dto';
 import { UserDTO } from '@/application/dto/response/user.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import {
+  AccessDeninedException,
   AlreadyExistEmailException,
   NotFoundFulfillmentCenterException,
   NotFoundFulfillmentException,
@@ -128,109 +125,93 @@ export class UserService {
   async createUser(body: CreateUserDTO) {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
-    if (await this.userRepository.hasEmail(body.email)) {
-      throw new AlreadyExistEmailException();
+    const type = body.type;
+
+    if (!type) {
+      throw new ValidationFailedException('type should not be empty');
     }
 
-    let partner: Partner;
-    let partnerChannel: PartnerChannel;
-    let fulfillment: Fulfillment;
-    let fulfillmentCenter: FulfillmentCenter;
-
-    switch (body.type) {
+    switch (requestUser.type) {
       case UserType.PartnerAdmin:
-        if (!body.partnerId) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.partnerId,
-              property: 'partnerId',
-              children: [],
-              constraints: {
-                isNotEmpty: 'partnerId should not be empty',
-              },
-            },
-          ]);
-        }
-
-        partner = await this.partnerRepository.findOneById(body.partnerId);
-
-        if (!partner) {
-          throw new NotFoundPartnerException(body.partnerId);
-        }
-
-        break;
-
-      case UserType.PartnerUser:
-        if (!body.partnerChannelId) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.partnerChannelId,
-              property: 'partnerChannelId',
-              children: [],
-              constraints: {
-                isNotEmpty: 'partnerChannelId should not be empty',
-              },
-            },
-          ]);
-        }
-
-        partnerChannel = await this.partnerChannelRepository.findOneById(body.partnerChannelId);
-        partner = partnerChannel?.partner;
-
-        if (!partnerChannel) {
-          throw new NotFoundPartnerChannelException(body.partnerChannelId);
+        if (type !== UserType.PartnerUser) {
+          throw new AccessDeninedException();
         }
 
         break;
 
       case UserType.FulfillmentAdmin:
-        if (!body.fulfillmentId) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.fulfillmentId,
-              property: 'fulfillmentId',
-              children: [],
-              constraints: {
-                isNotEmpty: 'fulfillmentId should not be empty',
-              },
-            },
-          ]);
+        if (type !== UserType.FulfillmentUser) {
+          throw new AccessDeninedException();
         }
 
-        fulfillment = await this.fulfillmentRepository.findOneById(body.fulfillmentId);
+        break;
+    }
 
-        if (!fulfillment) {
-          throw new NotFoundFulfillmentException(body.fulfillmentId);
+    const partnerId = requestUser.type === UserType.Admin ? body.partnerId : requestUser.partnerId;
+    const fulfillmentId = requestUser.type === UserType.Admin ? body.fulfillmentId : requestUser.fulfillmentId;
+    const partnerChannelId = body.partnerChannelId;
+    const fulfillmentCenterId = body.fulfillmentCenterId;
+
+    switch (type) {
+      case UserType.PartnerAdmin:
+        if (!partnerId) {
+          throw new ValidationFailedException('partnerId should not be empty');
+        }
+
+        if (!(await this.partnerRepository.existsBy({ id: partnerId }))) {
+          throw new NotFoundPartnerException(partnerId);
+        }
+
+        break;
+
+      case UserType.PartnerUser:
+        if (!partnerChannelId) {
+          throw new ValidationFailedException('partnerChannelId should not be empty');
+        }
+
+        const partnerChannel = await this.partnerChannelRepository.findOneBy({ id: partnerChannelId });
+
+        if (!partnerChannel) {
+          throw new NotFoundPartnerChannelException(partnerChannelId);
+        }
+
+        if (partnerChannel.partnerId !== partnerId) {
+          throw new AccessDeninedException();
+        }
+
+        break;
+
+      case UserType.FulfillmentAdmin:
+        if (!fulfillmentId) {
+          throw new ValidationFailedException('fulfillmentId should not be empty');
+        }
+
+        if (!(await this.fulfillmentRepository.existsBy({ id: fulfillmentId }))) {
+          throw new NotFoundFulfillmentException(fulfillmentId);
         }
 
         break;
 
       case UserType.FulfillmentUser:
-        if (!body.fulfillmentCenterId) {
-          throw new ValidationFailedException([
-            {
-              target: body,
-              value: body.fulfillmentCenterId,
-              property: 'fulfillmentCenterId',
-              children: [],
-              constraints: {
-                isNotEmpty: 'fulfillmentCenterId should not be empty',
-              },
-            },
-          ]);
+        if (!fulfillmentCenterId) {
+          throw new ValidationFailedException('fulfillmentCenterId should not be empty');
         }
 
-        fulfillmentCenter = await this.fulfillmentCenterRepository.findOneById(body.fulfillmentCenterId);
-        fulfillment = fulfillmentCenter?.fulfillment;
+        const fulfillmentCenter = await this.fulfillmentCenterRepository.findOneBy({ id: fulfillmentCenterId });
 
         if (!fulfillmentCenter) {
-          throw new NotFoundFulfillmentCenterException(body.fulfillmentCenterId);
+          throw new NotFoundPartnerChannelException(fulfillmentCenterId);
+        }
+
+        if (fulfillmentCenter.fulfillmentId !== fulfillmentId) {
+          throw new AccessDeninedException();
         }
 
         break;
+    }
+
+    if (await this.userRepository.hasEmail(body.email)) {
+      throw new AlreadyExistEmailException();
     }
 
     await this.userRepository.insertOne(requestUser, {
@@ -238,10 +219,10 @@ export class UserService {
       email: body.email,
       password: new PasswordVO(body.password),
       name: body.name,
-      partner,
-      partnerChannel,
-      fulfillment,
-      fulfillmentCenter,
+      partnerId,
+      partnerChannelId,
+      fulfillmentId,
+      fulfillmentCenterId,
     });
   }
 
@@ -253,29 +234,71 @@ export class UserService {
       throw new NotFoundUserException(id);
     }
 
-    if (body.partnerId && !(await this.partnerRepository.hasById(body.partnerId))) {
-      throw new NotFoundPartnerException(body.partnerId);
+    switch (requestUser.type) {
+      case UserType.PartnerAdmin:
+        if (user.type === UserType.PartnerAdmin || user.partnerId !== requestUser.partnerId) {
+          throw new AccessDeninedException();
+        }
+
+        break;
+
+      case UserType.FulfillmentAdmin:
+        if (user.type === UserType.FulfillmentAdmin || user.fulfillmentId !== requestUser.fulfillmentId) {
+          throw new AccessDeninedException();
+        }
+
+        break;
     }
 
-    if (body.partnerChannelId && !(await this.partnerChannelRepository.hasById(body.partnerChannelId))) {
-      throw new NotFoundPartnerChannelException(body.partnerChannelId);
+    const partnerId = (requestUser.type === UserType.Admin ? body.partnerId : requestUser.partnerId) ?? undefined;
+    const fulfillmentId = (requestUser.type === UserType.Admin ? body.fulfillmentId : requestUser.fulfillmentId) ?? undefined;
+
+    const partnerChannelId = [UserType.Admin, UserType.PartnerAdmin].includes(requestUser.type) ? body.partnerChannelId : undefined;
+    const fulfillmentCenterId = [UserType.Admin, UserType.FulfillmentAdmin].includes(requestUser.type) ? body.fulfillmentCenterId : undefined;
+
+    if (partnerId) {
+      if (!(await this.partnerRepository.existsBy({ id: partnerId }))) {
+        throw new NotFoundPartnerException(partnerId);
+      }
     }
 
-    if (body.fulfillmentId && !(await this.fulfillmentRepository.hasById(body.fulfillmentId))) {
-      throw new NotFoundFulfillmentException(body.fulfillmentId);
+    if (partnerChannelId) {
+      const partnerChannel = await this.partnerChannelRepository.findOneBy({ id: partnerChannelId });
+
+      if (!partnerChannel) {
+        throw new NotFoundPartnerChannelException(partnerChannelId);
+      }
+
+      if (partnerChannel.partnerId !== partnerId) {
+        throw new AccessDeninedException();
+      }
     }
 
-    if (body.fulfillmentCenterId && !(await this.fulfillmentCenterRepository.hasById(body.fulfillmentCenterId))) {
-      throw new NotFoundFulfillmentCenterException(body.fulfillmentCenterId);
+    if (fulfillmentId) {
+      if (!(await this.fulfillmentRepository.existsBy({ id: fulfillmentId }))) {
+        throw new NotFoundFulfillmentException(fulfillmentId);
+      }
+    }
+
+    if (fulfillmentCenterId) {
+      const fulfillmentCenter = await this.fulfillmentCenterRepository.findOneBy({ id: fulfillmentCenterId });
+
+      if (!fulfillmentCenter) {
+        throw new NotFoundFulfillmentCenterException(fulfillmentCenterId);
+      }
+
+      if (fulfillmentCenter.fulfillmentId !== fulfillmentId) {
+        throw new AccessDeninedException();
+      }
     }
 
     await this.userRepository.updateOne(requestUser, user, {
       name: body.name && body.name !== user.name ? body.name : undefined,
       status: body.status && body.status !== user.status ? body.status : undefined,
-      partnerId: body.partnerId && body.partnerId !== user.partnerId ? body.partnerId : undefined,
-      partnerChannelId: body.partnerChannelId && body.partnerChannelId !== user.partnerChannelId ? body.partnerChannelId : undefined,
-      fulfillmentId: body.fulfillmentId && body.fulfillmentId !== user.fulfillmentId ? body.fulfillmentId : undefined,
-      fulfillmentCenterId: body.fulfillmentCenterId && body.fulfillmentCenterId !== user.fulfillmentCenterId ? body.fulfillmentCenterId : undefined,
+      partnerId,
+      partnerChannelId,
+      fulfillmentId,
+      fulfillmentCenterId,
     });
   }
 
@@ -285,6 +308,22 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundUserException(id);
+    }
+
+    switch (requestUser.type) {
+      case UserType.PartnerAdmin:
+        if (user.partnerId !== requestUser.partnerId) {
+          throw new AccessDeninedException();
+        }
+
+        break;
+
+      case UserType.FulfillmentAdmin:
+        if (user.fulfillmentId !== requestUser.fulfillmentId) {
+          throw new AccessDeninedException();
+        }
+
+        break;
     }
 
     await this.userRepository.deleteOne(requestUser, user);
