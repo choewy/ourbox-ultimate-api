@@ -5,7 +5,7 @@ import { FulfillmentDTO } from './fulfillment.dto';
 import { PartnerChannelDTO } from './partner-channel.dto';
 import { PartnerDTO } from './partner.dto';
 
-import { UserType } from '@/application/domain/constant/enums';
+import { UserStatus, UserType } from '@/application/domain/constant/enums';
 import { User } from '@/application/domain/entity/user.entity';
 
 export class UserDTO {
@@ -20,6 +20,9 @@ export class UserDTO {
 
   @ApiResponseProperty({ type: String, format: 'email' })
   email: string;
+
+  @ApiResponseProperty({ type: String, enum: UserStatus })
+  status: UserStatus;
 
   @ApiResponseProperty({ type: Date })
   createdAt: Date;
@@ -44,6 +47,7 @@ export class UserDTO {
     this.type = user.type;
     this.name = user.name;
     this.email = user.email;
+    this.status = user.status;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
     this.partner = user.partner ? new PartnerDTO(user.partner) : null;
