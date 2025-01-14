@@ -46,10 +46,9 @@ export class UserDTO {
     this.email = user.email;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
-    this.partner = (user.partner ?? user.partnerChannel?.partner) ? new PartnerDTO(user.partner ?? user.partnerChannel?.partner) : null;
+    this.partner = user.partner ? new PartnerDTO(user.partner) : null;
     this.partnerChannel = user.partnerChannel ? new PartnerChannelDTO(user.partnerChannel) : null;
-    this.fulfillment =
-      (user.fulfillment ?? user.fulfillmentCenter?.fulfillment) ? new FulfillmentDTO(user.fulfillment ?? user.fulfillmentCenter?.fulfillment) : null;
+    this.fulfillment = user.fulfillment ? new FulfillmentDTO(user.fulfillment) : null;
     this.fulfillmentCenter = user.fulfillmentCenter ? new FulfillmentCenterDTO(user.fulfillmentCenter) : null;
   }
 }
