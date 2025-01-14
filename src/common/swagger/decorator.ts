@@ -9,7 +9,7 @@ export const ApiException = (...statusCodes: HttpStatus[]) => {
   }
 
   if (statusCodes.length === 0) {
-    statusCodes.push(HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN);
+    statusCodes.push(HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN);
   }
 
   const decorators: MethodDecorator[] = [];

@@ -13,8 +13,10 @@ import { PartnerRepository } from '@/application/domain/repository/partner.repos
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { GetUserListParamDTO } from '@/application/dto/request/get-user-list-param.dto';
+import { IdParamDTO } from '@/application/dto/request/id-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UserListDTO } from '@/application/dto/response/user-list.dto';
+import { UserDTO } from '@/application/dto/response/user.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
 import {
   AlreadyExistEmailException,
@@ -39,6 +41,7 @@ export class UserService {
   ) {}
 
   async getUserList(body: GetUserListParamDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
     const qb = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndMapOne('user.partner', 'user.partner', 'partner')
@@ -48,8 +51,6 @@ export class UserService {
       .where('1 = 1')
       .skip(Math.min(body.skip, 100))
       .take(Math.min(body.take, 100));
-
-    const requestUser = this.requestContextService.getRequestUser<User>();
 
     switch (requestUser.type) {
       case UserType.PartnerAdmin:
@@ -160,6 +161,31 @@ export class UserService {
     const rowsAndCount = await qb.getManyAndCount();
 
     return new UserListDTO(body, rowsAndCount);
+  }
+
+  async getUserById(param: IdParamDTO) {
+    const requestUser = this.requestContextService.getRequestUser<User>();
+    const user = await this.userRepository.findOne({
+      relations: {
+        partner: true,
+        partnerChannel: true,
+        fulfillment: true,
+        fulfillmentCenter: true,
+      },
+      where: {
+        id: param.id,
+        partnerId: requestUser.type === UserType.PartnerAdmin ? requestUser.partnerId : undefined,
+        partnerChannelId: requestUser.type === UserType.PartnerUser ? requestUser.partnerChannelId : undefined,
+        fulfillmentId: requestUser.type === UserType.FulfillmentAdmin ? requestUser.fulfillmentId : undefined,
+        fulfillmentCenterId: requestUser.type === UserType.FulfillmentUser ? requestUser.fulfillmentCenterId : undefined,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundUserException(param.id);
+    }
+
+    return new UserDTO(user);
   }
 
   async createUser(body: CreateUserDTO) {

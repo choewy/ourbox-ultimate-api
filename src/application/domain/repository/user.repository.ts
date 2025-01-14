@@ -22,9 +22,9 @@ export class UserRepository extends Repository<User> {
     return this.findOne({
       relations: {
         partner: true,
-        partnerChannel: { partner: true },
+        partnerChannel: true,
         fulfillment: true,
-        fulfillmentCenter: { fulfillment: true },
+        fulfillmentCenter: true,
       },
       where: { id },
     });
