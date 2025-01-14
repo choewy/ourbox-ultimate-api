@@ -7,7 +7,7 @@ import { RequiredAuth } from '@/application/decorator/required-auth';
 import { RequiredUserTypes } from '@/application/decorator/required-user-types';
 import { UserType } from '@/application/domain/constant/enums';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
-import { GetUsersParamDTO } from '@/application/dto/request/get-users-param.dto';
+import { GetUserListParamDTO } from '@/application/dto/request/get-user-list-param.dto';
 import { IdParamDTO } from '@/application/dto/request/id-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UserListDTO } from '@/application/dto/response/user-list.dto';
@@ -24,7 +24,7 @@ export class UserController {
   @ApiOperation({ summary: '사용자 목록 조회' })
   @ApiOkResponse({ type: UserListDTO })
   @ApiException()
-  async getUserList(@Body() body: GetUsersParamDTO) {
+  async getUserList(@Body() body: GetUserListParamDTO) {
     return this.userService.getUserList(body);
   }
 

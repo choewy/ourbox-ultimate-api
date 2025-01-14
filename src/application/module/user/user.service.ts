@@ -12,7 +12,7 @@ import { PartnerChannelRepository } from '@/application/domain/repository/partne
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { UserRepository } from '@/application/domain/repository/user.repository';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
-import { GetUsersParamDTO } from '@/application/dto/request/get-users-param.dto';
+import { GetUserListParamDTO } from '@/application/dto/request/get-user-list-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UserListDTO } from '@/application/dto/response/user-list.dto';
 import { RequestContextService } from '@/common/request-context/request-context.service';
@@ -38,7 +38,7 @@ export class UserService {
     private readonly fulfillmentCenterRepository: FulfillmentCenterRepository,
   ) {}
 
-  async getUserList(body: GetUsersParamDTO) {
+  async getUserList(body: GetUserListParamDTO) {
     const qb = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndMapOne('user.partner', 'user.partner', 'partner')

@@ -7,6 +7,7 @@ import { UserDTO } from '../response/user.dto';
 
 import { OrderBy, TypeOrmOrderBy } from '@/constant/enums';
 import { ToQueryOrderBy } from '@/constant/transformer/query-order-by.transformer';
+import { Trim } from '@/constant/transformer/trim.transformer';
 
 export class GetUserListDateRangeDTO {
   @ApiPropertyOptional({ type: DateRangeParamDTO })
@@ -96,45 +97,53 @@ export class GetUserListKeywordDTO
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   id?: string;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   type?: string;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   name?: string;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   email?: TypeOrmOrderBy;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   partner?: TypeOrmOrderBy;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   partnerChannel?: TypeOrmOrderBy;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   fulfillment?: TypeOrmOrderBy;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
+  @Trim()
   fulfillmentCenter?: TypeOrmOrderBy;
 }
 
-export class GetUsersParamDTO extends ListParamDTO {
+export class GetUserListParamDTO extends ListParamDTO {
   @ApiPropertyOptional({ type: GetUserListKeywordDTO })
   @IsInstance(GetUserListKeywordDTO)
   @IsOptional()
