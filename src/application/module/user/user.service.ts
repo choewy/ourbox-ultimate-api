@@ -91,7 +91,7 @@ export class UserService {
         fulfillmentCenter: { name: body.orderBy?.fulfillmentCenter ?? undefined },
       },
       skip: Math.max(body.skip, 0),
-      take: Math.min(body.take, 100),
+      take: Math.min(body.take, 1000),
     });
 
     return new UserListDTO(body, result);
