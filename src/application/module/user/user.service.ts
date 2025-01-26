@@ -9,6 +9,7 @@ import { FulfillmentRepository } from '@/application/domain/repository/fulfillme
 import { PartnerChannelRepository } from '@/application/domain/repository/partner-channel.repository';
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { UserRepository } from '@/application/domain/repository/user.repository';
+import { UserSearchKeywordField } from '@/application/dto/enums';
 import { CreateUserDTO } from '@/application/dto/request/create-user.dto';
 import { GetUserListParamDTO } from '@/application/dto/request/get-user-list-param.dto';
 import { IdParamDTO } from '@/application/dto/request/id-param.dto';
@@ -58,13 +59,27 @@ export class UserService {
         partnerChannelId: requestUser.type === UserType.PartnerUser ? requestUser.partnerChannelId : undefined,
         fulfillmentId: requestUser.type === UserType.FulfillmentAdmin ? requestUser.fulfillmentId : undefined,
         fulfillmentCenterId: requestUser.type === UserType.FulfillmentUser ? requestUser.fulfillmentCenterId : undefined,
-        id: body.keyword?.id ?? undefined,
-        name: body.keyword?.name ? Like(`%${body.keyword.name}%`) : undefined,
-        email: body.keyword?.email ? Like(`%${body.keyword.email}%`) : undefined,
-        partner: { name: body.keyword?.partner ? Like(`%${body.keyword.partner}%`) : undefined },
-        partnerChannel: { name: body.keyword?.partnerChannel ? Like(`%${body.keyword.partnerChannel}%`) : undefined },
-        fulfillment: { name: body.keyword?.fulfillment ? Like(`%${body.keyword.fulfillment}%`) : undefined },
-        fulfillmentCenter: { name: body.keyword?.fulfillmentCenter ? Like(`%${body.keyword.fulfillmentCenter}%`) : undefined },
+        id: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.UserId ? body.keyword.value : undefined,
+        name: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.UserName ? Like(`%${body.keyword.value}%`) : undefined,
+        email: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.UserEmail ? Like(`%${body.keyword.value}%`) : undefined,
+        partner: {
+          id: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.PartnerId ? body.keyword.value : undefined,
+          name: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.PartnerName ? Like(`%${body.keyword.value}%`) : undefined,
+        },
+        partnerChannel: {
+          id: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.PartnerChannelId ? body.keyword.value : undefined,
+          name: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.PartnerChannelName ? Like(`%${body.keyword.value}%`) : undefined,
+        },
+        fulfillment: {
+          id: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.FulfillmentId ? body.keyword.value : undefined,
+          name: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.FulfillmentName ? Like(`%${body.keyword.value}%`) : undefined,
+        },
+        fulfillmentCenter: {
+          id: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.FulfillmentCenterId ? body.keyword.value : undefined,
+          name: body.keyword?.value && body.keyword?.field === UserSearchKeywordField.FulfillmentCenterName ? Like(`%${body.keyword.value}%`) : undefined,
+        },
+        type: body.filter?.type,
+        status: body.filter?.status,
         createdAt:
           body.dateRange?.createdAt?.startDate || body.dateRange?.createdAt?.endDate
             ? And(

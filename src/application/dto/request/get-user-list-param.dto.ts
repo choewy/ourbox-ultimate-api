@@ -3,8 +3,10 @@ import { IsDateString, IsEnum, IsInstance, IsOptional, IsString } from 'class-va
 
 import { DateRangeParamDTO } from '../common/date-range.dto';
 import { ListParamDTO } from '../common/list-param.dto';
+import { UserSearchKeywordField } from '../enums';
 import { UserDTO } from '../response/user.dto';
 
+import { UserStatus, UserType } from '@/application/domain/constant/enums';
 import { OrderBy, TypeOrmOrderBy } from '@/constant/enums';
 import { ToQueryOrderBy } from '@/constant/transformer/query-order-by.transformer';
 import { Trim } from '@/constant/transformer/trim.transformer';
@@ -91,53 +93,37 @@ export class GetUserListOrderByDTO
   fulfillmentCenter?: TypeOrmOrderBy;
 }
 
-export class GetUserListKeywordDTO
-  implements Partial<Record<keyof Pick<UserDTO, 'id' | 'email' | 'name' | 'partner' | 'partnerChannel' | 'fulfillment' | 'fulfillmentCenter'>, string>>
-{
-  @ApiPropertyOptional({ type: String })
-  @IsString()
+export class GetUserListKeywordDTO {
+  @ApiPropertyOptional({ type: String, enum: UserSearchKeywordField })
+  @IsEnum(UserSearchKeywordField)
   @IsOptional()
-  @Trim()
-  id?: string;
+  field?: UserSearchKeywordField;
 
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
   @Trim()
-  name?: string;
+  value?: string;
+}
 
-  @ApiPropertyOptional({ type: String })
-  @IsString()
+export class GetUserListFilterDTO {
+  @ApiPropertyOptional({ type: String, enum: UserType })
+  @IsEnum(UserType)
   @IsOptional()
-  @Trim()
-  email?: TypeOrmOrderBy;
+  type?: UserType;
 
-  @ApiPropertyOptional({ type: String })
-  @IsString()
+  @ApiPropertyOptional({ type: String, enum: UserStatus })
+  @IsEnum(UserStatus)
   @IsOptional()
-  @Trim()
-  partner?: TypeOrmOrderBy;
-
-  @ApiPropertyOptional({ type: String })
-  @IsString()
-  @IsOptional()
-  @Trim()
-  partnerChannel?: TypeOrmOrderBy;
-
-  @ApiPropertyOptional({ type: String })
-  @IsString()
-  @IsOptional()
-  @Trim()
-  fulfillment?: TypeOrmOrderBy;
-
-  @ApiPropertyOptional({ type: String })
-  @IsString()
-  @IsOptional()
-  @Trim()
-  fulfillmentCenter?: TypeOrmOrderBy;
+  status?: UserStatus;
 }
 
 export class GetUserListParamDTO extends ListParamDTO {
+  @ApiPropertyOptional({ type: GetUserListFilterDTO })
+  @IsInstance(GetUserListFilterDTO)
+  @IsOptional()
+  filter?: GetUserListFilterDTO;
+
   @ApiPropertyOptional({ type: GetUserListKeywordDTO })
   @IsInstance(GetUserListKeywordDTO)
   @IsOptional()
