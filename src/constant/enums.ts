@@ -46,3 +46,9 @@ export enum TypeOrmOrderBy {
   ASC = 'ASC',
   DESC = 'DESC',
 }
+
+export enum Mimetype {
+  Xlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  JSON = 'application/json',
+  CSV = 'text/csv',
+}

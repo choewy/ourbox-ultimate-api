@@ -13,6 +13,7 @@ import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UserListDTO } from '@/application/dto/response/user-list.dto';
 import { UserDTO } from '@/application/dto/response/user.dto';
 import { ApiException } from '@/common/swagger/decorator';
+import { ExcelFileDTO } from '@/constant/dto/excel-file.dto';
 
 @ApiTags('사용자')
 @RequiredAuth()
@@ -26,6 +27,14 @@ export class UserController {
   @ApiException()
   async getUserList(@Body() body: GetUserListParamDTO) {
     return this.userService.getUserList(body);
+  }
+
+  @Post('excel')
+  @ApiOperation({ summary: '사용자 목록 엑셀 다운로드' })
+  @ApiOkResponse({ type: ExcelFileDTO })
+  @ApiException()
+  async downLoadUserListToExcel(@Body() body: GetUserListParamDTO) {
+    return this.userService.downloadUserListToExcel(body);
   }
 
   @Get(':id(\\d+)')

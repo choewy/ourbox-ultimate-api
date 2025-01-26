@@ -9,8 +9,10 @@ import { FulfillmentRepository } from '@/application/domain/repository/fulfillme
 import { PartnerChannelRepository } from '@/application/domain/repository/partner-channel.repository';
 import { PartnerRepository } from '@/application/domain/repository/partner.repository';
 import { UserRepository } from '@/application/domain/repository/user.repository';
+import { ExcelModule } from '@/common/excel/excel.module';
 
 @Module({
+  imports: [ExcelModule],
   controllers: [UserController],
   providers: [UserRepository, PartnerRepository, PartnerChannelRepository, FulfillmentRepository, FulfillmentCenterRepository, UserService, UserTypeGuard],
 })

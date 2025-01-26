@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DateTime } from 'luxon';
 import { And, LessThanOrEqual, Like, MoreThanOrEqual } from 'typeorm';
 
 import { UserType } from '@/application/domain/constant/enums';
@@ -14,7 +15,9 @@ import { IdParamDTO } from '@/application/dto/request/id-param.dto';
 import { UpdateUserDTO } from '@/application/dto/request/update-user.dto';
 import { UserListDTO } from '@/application/dto/response/user-list.dto';
 import { UserDTO } from '@/application/dto/response/user.dto';
+import { ExcelService } from '@/common/excel/excel.service';
 import { RequestContextService } from '@/common/request-context/request-context.service';
+import { ExcelFileDTO } from '@/constant/dto/excel-file.dto';
 import {
   AccessDeninedException,
   AlreadyExistEmailException,
@@ -31,6 +34,7 @@ import { PasswordVO } from '@/constant/vo/password.vo';
 export class UserService {
   constructor(
     private readonly requestContextService: RequestContextService,
+    private readonly excelService: ExcelService,
     private readonly userRepository: UserRepository,
     private readonly partnerRepository: PartnerRepository,
     private readonly partnerChannelRepository: PartnerChannelRepository,
@@ -95,6 +99,63 @@ export class UserService {
     });
 
     return new UserListDTO(body, result);
+  }
+
+  async downloadUserListToExcel(body: GetUserListParamDTO) {
+    const userList = await this.getUserList(body);
+
+    const workBook = new this.excelService.excelJS.Workbook();
+    const workSheet = workBook.addWorksheet('사용자 목록', { views: [{ state: 'frozen', ySplit: 1, xSplit: 2 }] });
+
+    let workSheetRowCount = 1;
+
+    const workSheetHeaderRow = workSheet.insertRow(workSheetRowCount++, [
+      '번호',
+      '이름',
+      '이메일',
+      '구분',
+      '상태',
+      '고객사번호',
+      '고객사명',
+      '판매채널번호',
+      '판매채널명',
+      '풀필먼트번호',
+      '풀필먼트명',
+      '센터번호',
+      '센터명',
+      '등록일시',
+      '수정일시',
+    ]);
+
+    workSheetHeaderRow.font = { bold: true };
+    workSheetHeaderRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    workSheetHeaderRow.border = { top: { style: 'thin' }, right: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' } };
+
+    while (userList.rows.length > 0) {
+      const user = userList.rows.shift();
+      const workSheetRow = workSheet.insertRow(workSheetRowCount++, [
+        user.id,
+        user.name,
+        user.email,
+        user.type,
+        user.status,
+        user.partner?.id ?? null,
+        user.partner?.name ?? '',
+        user.partnerChannel?.id ?? null,
+        user.partnerChannel?.name ?? '',
+        user.fulfillment?.id ?? null,
+        user.fulfillment?.name ?? '',
+        user.fulfillmentCenter?.id ?? null,
+        user.fulfillmentCenter?.name ?? '',
+        DateTime.fromJSDate(user.createdAt).toSQL(),
+        DateTime.fromJSDate(user.updatedAt).toSQL(),
+      ]);
+
+      workSheetRow.alignment = { vertical: 'middle' };
+      workSheetRow.border = { top: { style: 'thin' }, right: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' } };
+    }
+
+    return new ExcelFileDTO('사용자 목록.xlsx', await (workBook.xlsx.writeBuffer() as Promise<Buffer>));
   }
 
   async getUserById(param: IdParamDTO) {
