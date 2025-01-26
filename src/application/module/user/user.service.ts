@@ -28,6 +28,7 @@ import {
   NotFoundUserException,
   ValidationFailedException,
 } from '@/constant/exceptions';
+import { toUserStatusText, toUserTypeText } from '@/constant/transformer/user.transformer';
 import { PasswordVO } from '@/constant/vo/password.vo';
 
 @Injectable()
@@ -42,7 +43,7 @@ export class UserService {
     private readonly fulfillmentCenterRepository: FulfillmentCenterRepository,
   ) {}
 
-  async getUserList(body: GetUserListParamDTO) {
+  async getUserList(body: GetUserListParamDTO, ignorePagination = false) {
     const requestUser = this.requestContextService.getRequestUser<User>();
 
     const result = await this.userRepository.findAndCount({
@@ -94,15 +95,15 @@ export class UserService {
         fulfillment: { name: body.orderBy?.fulfillment ?? undefined },
         fulfillmentCenter: { name: body.orderBy?.fulfillmentCenter ?? undefined },
       },
-      skip: Math.max(body.skip, 0),
-      take: Math.min(body.take, 1000),
+      skip: ignorePagination ? undefined : Math.max(body.skip, 0),
+      take: ignorePagination ? undefined : Math.min(body.take, 1000),
     });
 
     return new UserListDTO(body, result);
   }
 
   async downloadUserListToExcel(body: GetUserListParamDTO) {
-    const userList = await this.getUserList(body);
+    const userList = await this.getUserList(body, true);
 
     const workBook = new this.excelService.excelJS.Workbook();
     const workSheet = workBook.addWorksheet('사용자 목록', { views: [{ state: 'frozen', ySplit: 1, xSplit: 2 }] });
@@ -137,8 +138,8 @@ export class UserService {
         user.id,
         user.name,
         user.email,
-        user.type,
-        user.status,
+        toUserTypeText(user.type),
+        toUserStatusText(user.status),
         user.partner?.id ?? null,
         user.partner?.name ?? '',
         user.partnerChannel?.id ?? null,
